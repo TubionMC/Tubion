@@ -42,7 +42,15 @@ repositories {
 }
 dependencies {
     // Fabric API
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${gameVersionToFabricApiVersion[platform.mcVersionStr]}+${platform.mcVersionStr}")
+    val fabricApiVersion = "${gameVersionToFabricApiVersion[platform.mcVersionStr]}+${platform.mcVersionStr}"
+    modImplementation(include(fabricApi.module("fabric-api-base", fabricApiVersion)) as Any)
+    modImplementation(include(fabricApi.module("fabric-networking-api-v1", fabricApiVersion)) as Any)
+    modImplementation(include(fabricApi.module("fabric-resource-loader-v0", fabricApiVersion)) as Any)
+    if (platform.mcVersionStr == "1.18.2") {
+        modImplementation(include(fabricApi.module("fabric-command-api-v1", fabricApiVersion)) as Any)
+    } else {
+        modImplementation(include(fabricApi.module("fabric-command-api-v2", fabricApiVersion)) as Any)
+    }
 
     // Mod APIs
     modApi("me.shedaniel.cloth:cloth-config-fabric:${gameVersionToClothVersion[platform.mcVersionStr]}") {
