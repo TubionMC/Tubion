@@ -54,7 +54,7 @@ dependencies {
     include(implementation("io.socket:socket.io-client:2.1.0") as Any)
     if (platform.mcVersionStr == "1.18.2") {
         runtimeOnly("org.joml:joml:1.10.5")
-        modRuntimeOnly("maven.modrinth:auth-me:3.1.0")
+        modRuntimeOnly("maven.modrinth:auth-me:5.0.0")
         modRuntimeOnly("maven.modrinth:sodium:mc1.18.2-0.4.1")
         modRuntimeOnly("maven.modrinth:lithium:mc1.18.2-0.10.3")
         modRuntimeOnly("maven.modrinth:lazydfu:0.1.2")
