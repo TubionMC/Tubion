@@ -30,6 +30,9 @@ jobs:
       - name: 🐘 Set up Gradle
         uses: gradle/gradle-build-action@v2
 
+      - name: Build JAR
+        run: ./gradlew build
+
       - name: 📦 Upload artifacts
         uses: softprops/action-gh-release@v1
         with:
