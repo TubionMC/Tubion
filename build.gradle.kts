@@ -50,7 +50,7 @@ dependencies {
     }
     modImplementation("com.terraformersmc:modmenu:${gameVersionToModMenuVersion[platform.mcVersionStr]}")
     // Dependencies
-    include(implementation("com.github.JnCrMx:discord-game-sdk4j:master-SNAPSHOT") as Any)
+    include(implementation("com.github.JnCrMx:discord-game-sdk4j:0.5.5") as Any)
     include(implementation("io.socket:socket.io-client:2.1.0") as Any)
     if (platform.mcVersionStr == "1.18.2") {
         runtimeOnly("org.joml:joml:1.10.5")
