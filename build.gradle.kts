@@ -78,6 +78,9 @@ tasks {
 publishing {
     publications {
         create<MavenPublication>("Tubion") {
+            groupId = "io.github.apricotfarmer11"
+            artifactId = "tubion-fabric-" + platform.mcVersionStr
+            version = project(".").version as String
             from(components["java"])
         }
     }

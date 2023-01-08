@@ -30,11 +30,6 @@ jobs:
       - name: 🐘 Set up Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: 📢 Publish new release to GitHub
-        run: ./gradlew publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: 📦 Upload artifacts
         uses: softprops/action-gh-release@v1
         with:
@@ -43,7 +38,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   publish_modrinth_curse:
-    name: Publish
+    name: Publish to Modrinth/CurseForge
     runs-on: ubuntu-latest
 
     strategy:
@@ -69,6 +64,18 @@ jobs:
       - name: Build JAR
         run: ./gradlew :${{ matrix.minecraft_version }}-fabric:build
 
+      - name: 📢 Publish new release to GitHub
+        run: ./gradlew publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read gradle.properties
+        uses: madhead/read-java-properties@latest
+        id: gradle_props
+        with:
+          file: gradle.properties
+          all: true
+
       - name: Publish (CurseForge/Modrinth)
         uses: Kir-Antipov/mc-publish@v3.2
         with:
@@ -78,8 +85,8 @@ jobs:
           modrinth-id: E6BMMeJm
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
-          name: "Tubion ${{ github.ref }} for Minecraft ${{ matrix.minecraft_version }}"
-          version: "${{ github.ref }}"
+          name: "Tubion ${{ steps.gradle_props.outputs.tubion_version }} for Minecraft ${{ matrix.minecraft_version }}"
+          version: "${{ steps.gradle_props.outputs.tubion_version }}-${{ matrix.minecraft_version }}"
           version-type: release
           changelog-file: CHANGELOG.md
           files-primary: "versions/${{ matrix.minecraft_version }}-fabric/build/libs/!(*-@(dev|sources|javadoc)).jar"
