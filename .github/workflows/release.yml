@@ -12,11 +12,7 @@ on:
 jobs:
   publish_github:
     name: Publish to GitHub
-
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        minecraft_version: [ "1.18.2", "1.19.2", "1.19.3" ]
 
     steps:
       - name: ✨ Checkout repository
@@ -27,6 +23,9 @@ jobs:
         with:
           java-version: 17
           distribution: zulu
+
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
 
       - name: 🐘 Set up Gradle
         uses: gradle/gradle-build-action@v2
@@ -45,8 +44,8 @@ jobs:
 
   publish_modrinth_curse:
     name: Publish
-
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         minecraft_version: ["1.18.2", "1.19.2", "1.19.3"]
@@ -60,6 +59,9 @@ jobs:
         with:
           java-version: 17
           distribution: zulu
+
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
 
       - name: 🐘 Set up Gradle
         uses: gradle/gradle-build-action@v2
