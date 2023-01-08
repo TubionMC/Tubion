@@ -10,10 +10,6 @@ jobs:
   build:
     strategy:
       matrix:
-        # Use these Java versions
-        java: [
-          17,    # Current Java LTS & minimum supported by Minecraft
-        ]
         # and run on both Linux and Windows
         os: [ubuntu-20.04, windows-2022]
     runs-on: ${{ matrix.os }}
@@ -22,10 +18,10 @@ jobs:
         uses: actions/checkout@v3
       - name: validate gradle wrapper
         uses: gradle/wrapper-validation-action@v1
-      - name: setup jdk ${{ matrix.java }}
+      - name: setup jdk 17
         uses: actions/setup-java@v3.9.0
         with:
-          java-version: ${{ matrix.java }}
+          java-version: '17'
           distribution: zulu
       - name: make gradle wrapper executable
         if: ${{ runner.os != 'Windows' }}
