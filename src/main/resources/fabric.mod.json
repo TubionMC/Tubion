@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "id": "tubion",
+  "version": "${version}",
+
+  "name": "Tubion",
+  "description": "All-in-one utility mod for TubNet",
+  "authors": [
+    "ApricotFarmer11"
+  ],
+  "contributors": [
+    "Callum_Is_Bad (art)",
+    "pedro9006 (TubNet Tweaks)",
+    "Willerhide (ideas)",
+    "4zoz (art)"
+  ],
+  "contact": {
+    "homepage": "https://forums.tubnet.gg/threads/5958",
+    "sources": "https://github.com/ApricotFarmer11/Tubion",
+    "issues": "https://github.com/ApricotFarmer11/Tubion/issues"
+  },
+
+  "license": "Apache-2.0",
+  "icon": "assets/tubion/icon.png",
+
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "io.github.apricotfarmer11.mods.tubion.TubionMod"
+    ],
+    "modmenu": [
+      "io.github.apricotfarmer11.mods.tubion.config.ModMenuIntegration"
+    ]
+  },
+  "mixins": [
+    "tubion.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.9",
+    "fabric": ">=${fabricVer}",
+    "minecraft": "~${mcVer}",
+    "java": ">=17",
+    "cloth-config": ">=${clothVer}"
+  },
+  "conflicts": {
+    "panorama": "*"
+  }
+}

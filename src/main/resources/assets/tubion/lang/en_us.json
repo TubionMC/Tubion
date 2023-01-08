@@ -1,0 +1,33 @@
+{
+  "text.tubion.settings.title": "Tubion Settings",
+
+  "text.tubion.settings.lobby.title": "Lobby",
+  "text.tubion.settings.lobby.hideDuplicateWelcomeMessage": "Hide duplicate welcome message",
+  "text.tubion.settings.lobby.hideDuplicateWelcomeMessage.tooltip": "When you join a lobby, the welcome message might pop-up again.",
+  "text.tubion.settings.lobby.betterNpcMessages": "Better NPC Messages",
+  "text.tubion.settings.lobby.betterNpcMessages.tooltip": "Improves the NPC Messages in the lobby by removing whitespace.",
+
+  "text.tubion.settings.battleRoyale.title": "Battle Royale",
+  "text.tubion.settings.battleRoyale.hideWoolLimitMessage": "Hide wool limit message",
+  "text.tubion.settings.battleRoyale.hideWoolLimitMessage.tooltip": "Hides the annoying message when you try to pick up other\nblocks when you have already reached the limit",
+
+  "text.tubion.settings.discord.title": "Discord",
+  "text.tubion.settings.discord.enableRPC": "Discord RPC",
+  "text.tubion.settings.discord.enableRPC.tooltip": "Discord Rich Presence allows your friends to see what you are playing.",
+
+  "text.tubion.settings.tubnet_tweaks.title": "Visuals",
+  "text.tubion.settings.tubnet_tweaks.enableTubnetTweaks": "Enable Tubnet Tweaks",
+  "text.tubion.settings.tubnet_tweaks.enableTubnetTweaks.tooltip": "Automatically injects Tubnet Tweaks when joining TubNet",
+  "text.tubion.settings.tubnet_tweaks.resourcePackType": "Pack version",
+  "text.tubion.settings.tubnet_tweaks.resourcePackType.tooltip": "The pack version to inject",
+  "text.tubion.settings.tubnet_tweaks.customLoadingScreen": "Custom Loading Screen",
+  "text.tubion.settings.tubnet_tweaks.customLoadingScreen.tooltip": "Turns the resource reloading screen background to blue when joining TubNet",
+  "text.tubion.settings.tubnet_tweaks.customPanorama": "TubNet Panorama",
+  "text.tubion.settings.tubnet_tweaks.customPanorama.tooltip": "Changes the Title Screen's panorama to a TubNet-themed one.",
+  "text.tubion.settings.tubnet_tweaks.compactchat": "Compact Chat",
+  "text.tubion.settings.tubnet_tweaks.compactchat.tooltip": "Cleans up chat by stacking duplicate messages. Ported from Sk1er's 1.8.9 mod.",
+
+  "text.tubion.settings.developer.title": "Developer Settings",
+  "text.tubion.settings.developer.hideEntityDataErrors": "Hide Entity Data Errors",
+  "text.tubion.settings.developer.hideEntityDataErrors.tooltip": "This feature cancels all errors from invalid entity data,\nwhich helps devs see what they need to see in the console."
+}
