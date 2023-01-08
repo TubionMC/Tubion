@@ -60,7 +60,7 @@ dependencies {
         modRuntimeOnly("maven.modrinth:lazydfu:0.1.2")
         modRuntimeOnly("maven.modrinth:entityculling:1.5.1-fabric-1.18")
         modRuntimeOnly("maven.modrinth:ferrite-core:4.2.1-fabric")
-        modRuntimeOnly("maven.modrinth:dynamic-fps:v2.1.0")
+        modRuntimeOnly("maven.modrinth:dynamic-fps:2.2.0")
     }
 }
 tasks {
