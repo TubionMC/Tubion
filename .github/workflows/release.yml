@@ -109,7 +109,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: 📦 Upload artifacts to mod hosts
-        uses: Kit-Antipov/mc-publish@v3.2
+        uses: Kir-Antipov/mc-publish@v3.2
         with:
           curseforge-id: 754889
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
