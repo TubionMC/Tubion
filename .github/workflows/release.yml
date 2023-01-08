@@ -73,16 +73,18 @@ jobs:
         uses: Kir-Antipov/mc-publish@v3.2
         with:
           curseforge-id: 754889
-          curseforge-token: ${{secrets.CURSEFORGE_TOKEN}}
+          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
           modrinth-id: E6BMMeJm
-          modrinth-token: ${{secrets.MODRINTH_TOKEN}}
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
           name: "Tubion ${{ github.ref }} for Minecraft ${{ matrix.minecraft_version }}"
           version: "${{ github.ref }}"
           version-type: release
           changelog-file: CHANGELOG.md
+          files-primary: "versions/${{ matrix.minecraft_version }}-fabric/build/libs/!(*-@(dev|sources|javadoc)).jar"
+          files-secondary: "versions/${{ matrix.minecraft_version }}-fabric/build/libs/*-@(dev|sources|javadoc).jar"
 
           loaders: fabric
-          game-versions: "${{ matrix.MINECRAFT_VERSION }}"
+          game-versions: "${{ matrix.minecraft_version }}"
           java: "17"
