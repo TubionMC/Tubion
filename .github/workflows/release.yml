@@ -67,7 +67,7 @@ jobs:
       - name: Build JAR
         run: ./gradlew :${{ matrix.minecraft_version }}-fabric:build
 
-      - name: 📢 Publish new release to GitHub
+      - name: 📢 Publish new release to GitHub Packages
         run: ./gradlew publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
