@@ -69,7 +69,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: Artifacts
-          path: build/libs
+          path: build/
 
       - name: Get release
         id: get_release
@@ -81,7 +81,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "${{ steps.get_release.outputs.tag_name }}"
-          files: 'build/libs/*'
+          files: 'build/*'
           token: ${{ secrets.GITHUB_TOKEN }}
 
   mod_release:
@@ -100,7 +100,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: "${{ matrix.minecraft_version }} Artifacts"
-          path: build/libs
+          path: build
 
       - name: Get release
         id: get_release
@@ -109,7 +109,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
 
       - name: 📦 Upload artifacts to mod hosts
-        uses: Kit-Antipov/mc-publish@v3.2
+        uses: Kir-Antipov/mc-publish@v3.2
         with:
           curseforge-id: 754889
           curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
@@ -120,8 +120,8 @@ jobs:
           name: "Tubion ${{ steps.get_release.outputs.tag_name }} for Minecraft ${{ matrix.minecraft_version }}"
           version: "${{ steps.get_release.outputs.tag_name }}-${{ matrix.minecraft_version }}"
           version-type: release
-          files-primary: "build/libs/!(*-@(dev|sources|javadoc)).jar"
-          files-secondary: "build/libs/*-@(dev|sources|javadoc).jar"
+          files-primary: "build/!(*-@(dev|sources|javadoc)).jar"
+          files-secondary: "build/*-@(dev|sources|javadoc).jar"
 
           loaders: fabric
           game-versions: "${{ matrix.minecraft_version }}"
