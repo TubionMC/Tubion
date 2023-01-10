@@ -17,7 +17,9 @@
   "contact": {
     "homepage": "https://forums.tubnet.gg/threads/5958",
     "sources": "https://github.com/ApricotFarmer11/Tubion",
-    "issues": "https://github.com/ApricotFarmer11/Tubion/issues"
+    "issues": "https://github.com/ApricotFarmer11/Tubion/issues",
+    "email": "apricotfarmer11+tubion@gmail.com",
+    "discord": "https://discord.gg/e3bsmguYZU"
   },
 
   "license": "Apache-2.0",
@@ -44,5 +46,12 @@
   },
   "conflicts": {
     "panorama": "*"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/e3bsmguYZU"
+      }
+    }
   }
 }
