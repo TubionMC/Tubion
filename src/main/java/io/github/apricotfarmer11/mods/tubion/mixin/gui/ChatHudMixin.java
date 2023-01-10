@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(ChatHud.class)
-public class ChatHudMixin implements ChatHudMixin$VisibleMessageGetter {
+public abstract class ChatHudMixin implements ChatHudMixin$VisibleMessageGetter {
     @Shadow
     private
         //#if MC>=11902

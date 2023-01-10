@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPlayNetworkHandler.class)
-public class ClientPlayNetworkHandlerMixin {
+public abstract class ClientPlayNetworkHandlerMixin {
     @Inject(at = @At("TAIL"), method = "onScoreboardObjectiveUpdate")
     public void onObjectiveChange(ScoreboardObjectiveUpdateS2CPacket packet, CallbackInfo ci) {
         ScoreboardEvents.SCOREBOARD_UPDATE.invoker().onScoreboardUpdate();

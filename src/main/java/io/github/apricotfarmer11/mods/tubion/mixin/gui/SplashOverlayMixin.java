@@ -19,7 +19,7 @@ import java.util.function.IntSupplier;
 
 
 @Mixin(SplashOverlay.class)
-public class SplashOverlayMixin {
+public abstract class SplashOverlayMixin {
     @Shadow
     private static final int MOJANG_RED = ColorHelper.Argb.getArgb(255, 239, 50, 61);
     @Shadow

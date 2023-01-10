@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.Supplier;
 
 @Mixin(ClientWorld.class)
-public class ClientWorldMixin {
+public abstract class ClientWorldMixin {
     @Inject(at = @At("TAIL"), method = "<init>")
     public void init(ClientPlayNetworkHandler netHandler, ClientWorld.Properties properties, RegistryKey registryRef, RegistryEntry registryEntry, int loadDistance, int simulationDistance, Supplier profiler, WorldRenderer worldRenderer, boolean debugWorld, long seed, CallbackInfo ci) {
         WorldEvents.INIT.invoker().onWorldInit();
