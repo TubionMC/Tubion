@@ -9,7 +9,7 @@ pluginManagement {
         maven("https://jitpack.io")
     }
     plugins {
-        id("gg.essential.multi-version.root") version "0.1.16"
+        id("gg.essential.multi-version.root") version "0.1.17"
     }
 }
 
