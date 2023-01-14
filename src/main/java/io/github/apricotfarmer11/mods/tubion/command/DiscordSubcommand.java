@@ -74,7 +74,19 @@ public class DiscordSubcommand {
                             throw new SimpleCommandExceptionType(TextUtils.literal("You cannot run this command outside of TubNet!")).create();
                         }
                         if (TubionMod.discordIntegration.discordCore == null) return 1;
-                        TubionMod.discordIntegration.discordCore.overlayManager().openGuildInvite("e3bsmguYZU");
+                        if (TubionMod.discordIntegration != null && TubionMod.discordIntegration.discordCore != null) {
+                            TubionMod.discordIntegration.discordCore.overlayManager().openGuildInvite("e3bsmguYZU");
+                        } else {
+                            ctx.getSource().sendFeedback(
+                                    TextUtils.literal("\uA0C9 Click here to join the Tubion Discord")
+                                            .setStyle(Style.EMPTY.withHoverEvent(
+                                                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextUtils.literal("Click here to join the Tubion Discord"))
+                                            ).withClickEvent(
+                                                    new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/e3bsmguYZU")
+                                            ))
+                                            .formatted(Formatting.BOLD, Formatting.DARK_PURPLE)
+                            );
+                        }
                         return 1;
                     }))
             .then(ClientCommandManager.literal("request")

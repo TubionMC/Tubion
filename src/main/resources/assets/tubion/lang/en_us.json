@@ -7,6 +7,10 @@
   "text.tubion.settings.lobby.betterNpcMessages": "Better NPC Messages",
   "text.tubion.settings.lobby.betterNpcMessages.tooltip": "Improves the NPC Messages in the lobby by removing whitespace.",
 
+  "text.tubion.settings.lightStrike.title": "Light Strike",
+  "text.tubion.settings.lightStrike.broadSwordGlint": "Broad Sword Glint",
+  "text.tubion.settings.lightStrike.broadSwordGlint.tooltip": "Adds back the enchantment glint for the broad sword, removed in patch #3.",
+
   "text.tubion.settings.battleRoyale.title": "Battle Royale",
   "text.tubion.settings.battleRoyale.hideWoolLimitMessage": "Hide wool limit message",
   "text.tubion.settings.battleRoyale.hideWoolLimitMessage.tooltip": "Hides the annoying message when you try to pick up other\nblocks when you have already reached the limit",
@@ -27,7 +31,9 @@
   "text.tubion.settings.tubnet_tweaks.compactchat": "Compact Chat",
   "text.tubion.settings.tubnet_tweaks.compactchat.tooltip": "Cleans up chat by stacking duplicate messages. Ported from Sk1er's 1.8.9 mod.",
 
-  "text.tubion.settings.developer.title": "Developer Settings",
-  "text.tubion.settings.developer.hideEntityDataErrors": "Hide Entity Data Errors",
-  "text.tubion.settings.developer.hideEntityDataErrors.tooltip": "This feature cancels all errors from invalid entity data,\nwhich helps devs see what they need to see in the console."
+  "text.tubion.settings.qol.title": "Quality-Of-Life",
+  "text.tubion.settings.qol.autogf": "AutoGF",
+  "text.tubion.settings.qol.autogf.tooltip": "Automatically say \"glhf\" in chat when a game starts.\nPorted from Sk1er's 1.8.9 mod.",
+  "text.tubion.settings.qol.autogg": "AutoGG",
+  "text.tubion.settings.qol.autogg.tooltip": "Automatically say \"gg\" in chat when a game ends.\nPorted from Sk1er's 1.8.9 mod."
 }

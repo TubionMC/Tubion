@@ -98,10 +98,6 @@ public class TubnetDiscordIntegration {
             CLIENT.inGameHud.getChatHud().addMessage(this.BASE.shallowCopy().append("Failed to connect to Discord. Run ").append(TextUtils.literal("/tubion discord reconnect").setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tubion discord reconnect"))).formatted(Formatting.BOLD).append(" to attempt to reconnect.")));
         }
     }
-    public void reloadActivityManager() {
-        discordCore.activityManager().clearActivity();
-        updateRpc();
-    }
     public boolean initializeRpc() {
         if (!TubionMod.getConfig().enableDiscordRPC) return true;
         CreateParams params = new CreateParams();
@@ -198,7 +194,7 @@ public class TubnetDiscordIntegration {
                 last = gamemode;
                 activity.setDetails(gamemode);
                 if (Tubnet.getGameMode() == GameMode.LOBBY) {
-                    activity.setState("");
+                    activity.setState("In the Lobby");
                 } else {
                     activity.setState(gamestate);
                 }
@@ -213,7 +209,7 @@ public class TubnetDiscordIntegration {
             String secret = "////:" + CLIENT.getSession().getUsername() + ":" + Tubnet.currentParty.partyIdSecret.toString();
             activity.secrets().setJoinSecret(secret);
             activity.party().size().setCurrentSize(Tubnet.currentParty.members.size());
-            activity.party().size().setMaxSize(4);
+            activity.party().size().setMaxSize(4); // todo: update
             discordCore.activityManager().updateActivity(activity);
         } catch(GameSDKException ex) {
             LOGGER.error("Failed to send Activity Update: " + ex.toString());

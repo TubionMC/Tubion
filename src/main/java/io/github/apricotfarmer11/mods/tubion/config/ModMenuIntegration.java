@@ -49,6 +49,18 @@ public class ModMenuIntegration implements ModMenuApi {
                         .build()
         );
 
+        // LIGHT STRIKE CATEGORY
+        ConfigCategory lightStrikeCategory = configBuilder.getOrCreateCategory(TextUtils.translatable("text.tubion.settings.lightStrike.title"));
+
+        lightStrikeCategory.addEntry(
+                configBuilder.entryBuilder()
+                        .startBooleanToggle(TextUtils.translatable("text.tubion.settings.lightStrike.broadSwordGlint"), TubionConfigManager.getConfig().broadSwordGlint)
+                        .setDefaultValue(true)
+                        .setTooltip(TextUtils.translatable("text.tubion.settings.lightStrike.broadSwordGlint.tooltip"))
+                        .setSaveConsumer(val -> TubionConfigManager.getConfig().broadSwordGlint = val)
+                        .build()
+        );
+
         // BATTLE ROYALE CATEGORY
         ConfigCategory battleRoyaleCategory = configBuilder.getOrCreateCategory(TextUtils.translatable("text.tubion.settings.battleRoyale.title"));
 
@@ -57,24 +69,7 @@ public class ModMenuIntegration implements ModMenuApi {
                         .startBooleanToggle(TextUtils.translatable("text.tubion.settings.battleRoyale.hideWoolLimitMessage"), TubionConfigManager.getConfig().hideWoolLimitMessage)
                         .setDefaultValue(false)
                         .setTooltip(TextUtils.translatable("text.tubion.settings.battleRoyale.hideWoolLimitMessage.tooltip"))
-                        .setSaveConsumer(val -> {
-                            TubionConfigManager.getConfig().hideWoolLimitMessage = val;
-                        })
-                        .build()
-        );
-        // DISCORD CATEGORY
-        ConfigCategory discordCategory = configBuilder.getOrCreateCategory(TextUtils.translatable("text.tubion.settings.discord.title"));
-
-        discordCategory.addEntry(
-                configBuilder.entryBuilder()
-                        .startBooleanToggle(TextUtils.translatable("text.tubion.settings.discord.enableRPC"), TubionConfigManager.getConfig().enableDiscordRPC)
-                        .setDefaultValue(true)
-                        .setTooltip(
-                                TextUtils.translatable("text.tubion.settings.discord.enableRPC.tooltip")
-                        )
-                        .setSaveConsumer(val -> {
-                            TubionConfigManager.getConfig().enableDiscordRPC = val;
-                        })
+                        .setSaveConsumer(val -> TubionConfigManager.getConfig().hideWoolLimitMessage = val)
                         .build()
         );
 
@@ -123,13 +118,47 @@ public class ModMenuIntegration implements ModMenuApi {
                         })
                         .build()
         );
-        tubnetTweaksCategory.addEntry(
+
+        // QOL CATEGORY
+        ConfigCategory qolCategory = configBuilder.getOrCreateCategory(TextUtils.translatable("text.tubion.settings.qol.title"));
+        qolCategory.addEntry(
+                configBuilder.entryBuilder()
+                        .startBooleanToggle(TextUtils.translatable("text.tubion.settings.qol.autogg"), TubionConfigManager.getConfig().autoGg)
+                        .setDefaultValue(false)
+                        .setTooltip(TextUtils.translatable("text.tubion.settings.qol.autogg.tooltip"))
+                        .setSaveConsumer(val -> {
+                            TubionConfigManager.getConfig().autoGg = val;
+                        })
+                        .build()
+        );
+        qolCategory.addEntry(
+                configBuilder.entryBuilder()
+                        .startBooleanToggle(TextUtils.translatable("text.tubion.settings.qol.autogf"), TubionConfigManager.getConfig().autoGf)
+                        .setDefaultValue(false)
+                        .setTooltip(TextUtils.translatable("text.tubion.settings.qol.autogf.tooltip"))
+                        .setSaveConsumer(val -> {
+                            TubionConfigManager.getConfig().autoGf = val;
+                        })
+                        .build()
+        );
+        qolCategory.addEntry(
                 configBuilder.entryBuilder()
                         .startBooleanToggle(TextUtils.translatable("text.tubion.settings.tubnet_tweaks.compactchat"), TubionConfigManager.getConfig().enableCompactChat)
                         .setDefaultValue(false)
+                        .setTooltip(TextUtils.translatable("text.tubion.settings.tubnet_tweaks.compactchat.tooltip"))
                         .setSaveConsumer(val -> {
                             TubionConfigManager.getConfig().enableCompactChat = val;
                         })
+                        .build()
+        );
+        qolCategory.addEntry(
+                configBuilder.entryBuilder()
+                        .startBooleanToggle(TextUtils.translatable("text.tubion.settings.discord.enableRPC"), TubionConfigManager.getConfig().enableDiscordRPC)
+                        .setDefaultValue(true)
+                        .setTooltip(
+                                TextUtils.translatable("text.tubion.settings.discord.enableRPC.tooltip")
+                        )
+                        .setSaveConsumer(val -> TubionConfigManager.getConfig().enableDiscordRPC = val)
                         .build()
         );
 

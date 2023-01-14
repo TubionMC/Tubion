@@ -15,6 +15,7 @@ public class TubionConfig {
     public boolean betterNpcMessages = true;
     public boolean autoGg = false;
     public boolean autoGf = false;
+    public boolean broadSwordGlint = true;
 
 
     public enum TubnetTweaksPackTypes {

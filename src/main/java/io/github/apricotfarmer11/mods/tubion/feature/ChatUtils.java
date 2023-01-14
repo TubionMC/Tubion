@@ -9,7 +9,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
-import org.slf4j.LoggerFactory;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,7 +35,7 @@ public class ChatUtils {
                 }
                 if (config.betterNpcMessages) {
                     String message = msg.getString();
-                    Pattern npc1Liner = Pattern.compile("\n . ([a-zA-z ]+)\n\n {2}(.*)\n$");
+                    Pattern npc1Liner = Pattern.compile("\n . ([a-zA-Z ]+)\n\n {2}(.*)\n$");
                     Pattern npc2Liner = Pattern.compile("\n . ([a-zA-Z ]+)\n\n {2}(.*)\n {2}(.*)\n$");
                     Pattern npc3Liner = Pattern.compile("\n . ([a-zA-Z ]+)\n\n {2}(.*)\n {2}(.*)\n {2}(.*)\n$");
 
@@ -55,7 +54,7 @@ public class ChatUtils {
                             Matcher npcLiner1Match = npc1Liner.matcher(message);
                             if (npcLiner1Match.find()) {
                                 npcName = npcLiner1Match.group(1);
-                                npcMessage = npcLiner2Match.group(2);
+                                npcMessage = npcLiner1Match.group(2);
                             } else {
                                 break;
                             }

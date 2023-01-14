@@ -1,7 +1,6 @@
+![Modrinth Downloads](https://img.shields.io/modrinth/dt/tubion?label=modrinth%20downloads&style=for-the-badge)
 # Tubion
-[Tubble (TubNet Forums) thread](https://forums.tubnet.gg/threads/5658) | [Support Discord](https://apricotfarmer11.github.io/discord) | [CurseForge](https://curseforge.com/minecraft/mc-mods/tubion)
-
-Tubion is an utility mod for the server [TubNet](https://forums.tubnet.gg/). It aims to include highly configurable modifications to the client, to enable you to have a better gameplay experience overall, and to fill in the gaps in TubNet's multiplayer regime.
+Tubion is a utility mod for the server [TubNet](https://forums.tubnet.gg/). It aims to include highly configurable modifications to the client, to enable you to have a better gameplay experience overall, and to fill in the gaps in TubNet's multiplayer regime.
 
 ## Features
 Currently, the mod showcases several features:
@@ -17,3 +16,7 @@ Currently, the mod showcases several features:
 ## Installing
 This mod is only available for Minecraft: Java Edition. If you're on Bedrock Edition, and own Bedrock for Windows, it might be a good idea to [use Java Edition instead](https://help.minecraft.net/hc/en-us/articles/4607523809933-Buy-Minecraft-PC-Bundle-Get-Both-Games-).
 
+This mod also requires [Fabric](https://fabricmc.net/), not Forge. Quilt support is planned in the near future.
+
+### Downloading Mod Dependencies
+This mod generally requires [Cloth Config](https://github.com/shedaniel/cloth-config). It's available at [Modrinth]
