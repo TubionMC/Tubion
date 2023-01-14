@@ -122,7 +122,7 @@ jobs:
           version-type: release
           files-primary: "build/!(*-@(dev|sources|javadoc)).jar"
           files-secondary: "build/*-@(dev|sources|javadoc).jar"
-          changelog-file: file('CHANGELOG.md')
+          changelog-file: "CHANGELOG.md"
 
           loaders: fabric
           game-versions: "${{ matrix.minecraft_version }}"
