@@ -23,7 +23,6 @@ public abstract class ItemMixin {
         if (!TubionMod.getConfig().broadSwordGlint) return;
         if (TubnetCore.getInstance().connected && TubnetCore.getInstance().getGameMode() == GameMode.LIGHT_STRIKE) {
             if (itemStack.getName().getString().contains("Broad Sword") || itemStack.getName().getString().contains("Broadsword")) {
-                LOGGER.info("set!");
                 cir.setReturnValue(true);
                 cir.cancel();
             }
