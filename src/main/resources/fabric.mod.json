@@ -39,10 +39,8 @@
   ],
   "depends": {
     "fabricloader": ">=0.14.9",
-    "fabric": ">=${fabricVer}",
     "minecraft": "~${mcVer}",
-    "java": ">=17",
-    "cloth-config": ">=${clothVer}"
+    "java": ">=17"
   },
   "conflicts": {
     "panorama": "*"
