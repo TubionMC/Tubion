@@ -174,6 +174,7 @@ public class TubnetDiscordIntegration {
             TubnetCore Tubnet = TubnetCore.getInstance();
             TubnetGame game = Tubnet.getCurrentGame();
             if (game != null) {
+                gamemode = game.getName();
                 if (Tubnet.getGameMode() == GameMode.CRYSTAL_RUSH) {
                     if (game.getTeamType() == TeamType.SOLOS) {
                         gamemode += " (Solos)";
@@ -187,6 +188,7 @@ public class TubnetDiscordIntegration {
                 } else if (inQueue) {
                     time = Instant.now();
                     inQueue = false;
+                    gamestate = "In game";
                 }
                 if (!last.equals(gamemode)) {
                     LOGGER.info("New game identified: " + gamemode);
@@ -199,7 +201,10 @@ public class TubnetDiscordIntegration {
                     activity.setState(gamestate);
                 }
             } else {
+                gamemode = "";
+                gamestate = "";
                 activity.setDetails("Unknown");
+                activity.setState("");
             }
             if (time == null) time = Instant.now();
             activity.timestamps().setStart(Instant.ofEpochSecond(time.toEpochMilli()));
@@ -209,7 +214,7 @@ public class TubnetDiscordIntegration {
             String secret = "////:" + CLIENT.getSession().getUsername() + ":" + Tubnet.currentParty.partyIdSecret.toString();
             activity.secrets().setJoinSecret(secret);
             activity.party().size().setCurrentSize(Tubnet.currentParty.members.size());
-            activity.party().size().setMaxSize(4); // todo: update
+            activity.party().size().setMaxSize(4);
             discordCore.activityManager().updateActivity(activity);
         } catch(GameSDKException ex) {
             LOGGER.error("Failed to send Activity Update: " + ex.toString());
