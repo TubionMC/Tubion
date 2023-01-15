@@ -8,7 +8,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 //#endif
-import io.github.apricotfarmer11.mods.tubion.config.ModMenuIntegration;
+import io.github.apricotfarmer11.mods.tubion.config.TubionConfigManager;
 import io.github.apricotfarmer11.mods.tubion.core.helper.UpdateHelper;
 import io.github.apricotfarmer11.mods.tubion.TubionMod;
 import io.github.apricotfarmer11.mods.tubion.multiport.TextUtils;
@@ -40,7 +40,7 @@ public class TubionCommandManager {
                                 ClientCommandManager.literal("settings")
                                         .executes(context -> {
                                             CLIENT.setScreen(
-                                                    ModMenuIntegration.getScreen()
+                                                    TubionConfigManager.getConfigurationBuilder().build()
                                             );
                                             return 1;
                                         })
@@ -53,7 +53,7 @@ public class TubionCommandManager {
                         LOGGER.error("Failed to fetch latest version from Modrinth.");
                         e.printStackTrace();
                     }
-                    net.minecraft.text.Text updateText = TextUtils.literal("You're on the latest version");
+                    net.minecraft.text.Text updateText = TextUtils.literal("No new updates");
                     if (!version.equals(TubionMod.VERSION)) {
                         updateText = TextUtils.literal("Latest version: " + version + " (click ")
                                 .append(
@@ -108,7 +108,7 @@ public class TubionCommandManager {
                                                     ).withClickEvent(
                                                             new ClickEvent(ClickEvent.Action.OPEN_URL, "https://forums.tubnet.gg/threads/5958/")
                                                     ).withFormatting(Formatting.YELLOW, Formatting.BOLD))
-                                    )
+                                    ).append("\n  ").append(updateText)
                     );
                     return 1;
                 })
