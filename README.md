@@ -28,7 +28,7 @@ To get this project, you can either obtain it as a zip file above, or clone it v
 git clone https://github.com/ApricotFarmer11/Tubion
 cd Tubion
 ```
-To build the project and obtain the actual JARs, you need to download JDK 17 and Gradle.
+To build the project and obtain the actual JARs, you need to download JDK 17.
 ```bash
 # unix (linux/macos)
 ./gradlew build

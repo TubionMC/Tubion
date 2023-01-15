@@ -81,7 +81,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: "${{ steps.get_release.outputs.tag_name }}"
-          files: build/*
+          files: build/!(*-@(dev|sources|javadoc)).jar
           token: ${{ secrets.GITHUB_TOKEN }}
 
   mod_release:
