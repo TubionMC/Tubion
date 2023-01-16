@@ -15,7 +15,7 @@ public class PlayerHelper {
     }
     public static void sendCommand(String command) {
         //#if MC<11902
-        //$$ CLIENT.player.sendChatMessage("/" + command);
+        CLIENT.player.sendChatMessage("/" + command);
         //#elseif MC==11902
         //$$ CLIENT.player.sendCommand("/" + command);
         //#elseif MC>=11903

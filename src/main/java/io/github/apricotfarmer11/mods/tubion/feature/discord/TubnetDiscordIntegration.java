@@ -8,6 +8,7 @@ import de.jcm.discordgamesdk.activity.Activity;
 import de.jcm.discordgamesdk.user.DiscordUser;
 import io.github.apricotfarmer11.mods.tubion.TubionMod;
 import io.github.apricotfarmer11.mods.tubion.core.helper.ChatHelper;
+import io.github.apricotfarmer11.mods.tubion.core.helper.PlayerHelper;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.TubnetCore;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.event.TubnetConnectionEvents;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.GameMode;
@@ -74,7 +75,7 @@ public class TubnetDiscordIntegration {
                 try {
                     discordCore.runCallbacks();
                 } catch(Exception ex) {
-                    LOGGER.info("Error when running callbacks: " + ex.toString());
+                    LOGGER.info("Error when running callbacks: " + ex);
                 }
             }
         });
@@ -90,7 +91,9 @@ public class TubnetDiscordIntegration {
             discordCore = null;
             initialized = false;
         }
-        if (!TubionMod.getConfig().enableDiscordRPC) return;
+        if (!TubionMod.getConfig().enableDiscordRPC) {
+            CLIENT.inGameHud.getChatHud().addMessage(BASE.shallowCopy().append("RPC is not enabled!"));
+        }
         CLIENT.inGameHud.getChatHud().addMessage(BASE.shallowCopy().append("Reconnecting to Discord"));
         if (initializeRpc()) {
             CLIENT.inGameHud.getChatHud().addMessage(BASE.shallowCopy().append("Connected to Discord"));
@@ -107,16 +110,7 @@ public class TubnetDiscordIntegration {
             @Override
             public void onActivityJoin(String secret) {
                 String[] data = secret.split(":");
-                CLIENT.player
-                //#if MC==11902
-                //$$    .sendCommand(
-                //#elseif MC>=11903
-                //$$    .networkHandler.sendChatCommand(
-                //#else
-                        .sendChatMessage("/" +
-                //#endif
-                                "msg " + data[1] + " tubionPartyJoin." + discordCore.userManager().getCurrentUser().getUserId() + "." + data[2]
-                        );
+                PlayerHelper.sendCommand("msg " + data[1] + " tubionPartyJoin." + discordCore.userManager().getCurrentUser().getUserId() + "." + data[2]);
             }
 
             @Override
