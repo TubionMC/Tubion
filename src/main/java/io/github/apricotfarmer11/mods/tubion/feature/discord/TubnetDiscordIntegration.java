@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class TubnetDiscordIntegration {
     public static final Logger LOGGER = LoggerFactory.getLogger("Tubion/Discord");
@@ -34,8 +35,6 @@ public class TubnetDiscordIntegration {
     public static final MutableText BASE = ChatHelper.getChatPrefixWithFeature(
             TextUtils.literal("Discord").formatted(Formatting.BOLD, Formatting.DARK_PURPLE).append(TextUtils.literal("").formatted(Formatting.RESET))
     );
-    private int threads = 0;
-    private boolean initialized = false;
     private String last = "";
     private Instant time;
     private String gamemode;
@@ -51,14 +50,11 @@ public class TubnetDiscordIntegration {
             gamemode = "Lobby";
             gamestate = "";
             inQueue = false;
-            if (discordCore == null || !discordCore.isOpen()) {
-                (new Thread("Discord Initializer Thread #" + ++threads) {
-                    @Override
-                    public void run() {
-                        initializeRpc();
-                    }
-                }).start();
-            }
+            CompletableFuture.runAsync(() -> {
+                if (TubionMod.getConfig().enableDiscordRPC) {
+                    initializeRpc();
+                }
+            });
         });
         TubnetConnectionEvents.DISCONNECT.register(() -> {
             if (discordCore != null && discordCore.isOpen()) {
@@ -67,7 +63,6 @@ public class TubnetDiscordIntegration {
                     discordCore.close();
                 } catch(GameSDKException ex) {}
                 discordCore = null;
-                initialized = false;
             }
         });
         ClientTickEvents.END_CLIENT_TICK.register((client) -> {
@@ -89,10 +84,10 @@ public class TubnetDiscordIntegration {
         if (discordCore != null) {
             if (discordCore.isOpen()) discordCore.close();
             discordCore = null;
-            initialized = false;
         }
         if (!TubionMod.getConfig().enableDiscordRPC) {
             CLIENT.inGameHud.getChatHud().addMessage(BASE.shallowCopy().append("RPC is not enabled!"));
+            return;
         }
         CLIENT.inGameHud.getChatHud().addMessage(BASE.shallowCopy().append("Reconnecting to Discord"));
         if (initializeRpc()) {
@@ -102,7 +97,6 @@ public class TubnetDiscordIntegration {
         }
     }
     public boolean initializeRpc() {
-        if (!TubionMod.getConfig().enableDiscordRPC) return true;
         CreateParams params = new CreateParams();
         params.setClientID(1046493096512339968L);
         params.setFlags(CreateParams.Flags.NO_REQUIRE_DISCORD);
@@ -151,11 +145,9 @@ public class TubnetDiscordIntegration {
         try {
             discordCore = new Core(params);
             LOGGER.info("Successfully initialized Discord GameSDK!");
-            initialized = true;
             return true;
         } catch(GameSDKException ex) {
             LOGGER.error("An error occurred while attempting to initialize the SDK:\n" + ex.toString());
-            initialized = false;
             assert MinecraftClient.getInstance().player != null;
             CLIENT.inGameHud.getChatHud().addMessage(this.BASE.shallowCopy().append("Failed to connect to Discord. Run ").append(TextUtils.literal("/tubion discord reconnect").setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tubion discord reconnect"))).formatted(Formatting.BOLD).append(" to attempt to reconnect.")));
             return false;
