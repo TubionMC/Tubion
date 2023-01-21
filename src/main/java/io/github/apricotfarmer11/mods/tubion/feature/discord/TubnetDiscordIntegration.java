@@ -93,7 +93,7 @@ public class TubnetDiscordIntegration {
         if (initializeRpc()) {
             CLIENT.inGameHud.getChatHud().addMessage(BASE.shallowCopy().append("Connected to Discord"));
         } else {
-            CLIENT.inGameHud.getChatHud().addMessage(this.BASE.shallowCopy().append("Failed to connect to Discord. Run ").append(TextUtils.literal("/tubion discord reconnect").setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tubion discord reconnect"))).formatted(Formatting.BOLD).append(" to attempt to reconnect.")));
+            CLIENT.inGameHud.getChatHud().addMessage(BASE.shallowCopy().append("Failed to connect to Discord. Run ").append(TextUtils.literal("/tubion discord reconnect").setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tubion discord reconnect"))).formatted(Formatting.BOLD).append(" to attempt to reconnect.")));
         }
     }
     public boolean initializeRpc() {

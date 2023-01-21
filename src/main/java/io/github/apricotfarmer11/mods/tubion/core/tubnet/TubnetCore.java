@@ -8,8 +8,10 @@ import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.BattleRoyale;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.CrystalRush;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.LightStrike;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.Lobby;
+import io.github.apricotfarmer11.mods.tubion.core.websocket.SocketCore;
 import io.github.apricotfarmer11.mods.tubion.event.ChatMessageEvent;
 import io.github.apricotfarmer11.mods.tubion.multiport.TextUtils;
+import io.netty.channel.local.LocalAddress;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
@@ -23,6 +25,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.net.URISyntaxException;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,22 +53,20 @@ public class TubnetCore {
     private GameMode gameMode;
     private TubnetGame currentGame;
     public TubnetParty currentParty;
+    private SocketCore socket;
 
     public TubnetCore() {
         // Load event handlers
         ClientLoginConnectionEvents.INIT.register((handler, client) -> {
-            try {
-                InetSocketAddress socketAddress = (InetSocketAddress) handler.getConnection().getAddress();
-                if (socketAddress == null) return;
-                if (!socketAddress.getHostName().toLowerCase().matches("^((.*)\\.)?tubnet\\.gg\\.?$")) return;
-                // We don't really know if the login attempt will
-                // be successful, so we approach this with caution
-                connecting = true;
-                LOGGER.info("Connecting to TubNet[phase: login|OK]");
-                TubnetConnectionEvents.INIT.invoker().onLoginStart();
-            } catch(ClassCastException ex) {
-                // Singleplayer error
-            }
+            SocketAddress addr = handler.getConnection().getAddress();
+            if (addr instanceof LocalAddress) return; // singleplayer
+            InetSocketAddress socketAddress = (InetSocketAddress) handler.getConnection().getAddress();
+            if (socketAddress == null) return;
+            if (!socketAddress.getHostName().toLowerCase().matches("^((.*)\\.)?tubnet\\.gg\\.?$")) return;
+            // We don't really know if the login attempt will
+            // be successful, so we approach this with caution
+            connecting = true;
+            LOGGER.info("Connecting to TubNet[phase: login|OK]");
         });
         ClientLoginConnectionEvents.DISCONNECT.register((handler, client) -> {
             if (!connecting) return;
@@ -75,26 +77,30 @@ public class TubnetCore {
 
         ClientPlayConnectionEvents.INIT.register((handler, client) -> {
             if (connected) return; // We are switching to a different server, don't fire again
+            SocketAddress addr = handler.getConnection().getAddress();
+            if (addr instanceof LocalAddress) return; // singleplayer
+            InetSocketAddress socketAddress = (InetSocketAddress) addr;
+            if (socketAddress == null) return;
+            if (!socketAddress.getHostName().toLowerCase().matches("^((.*)\\.)?tubnet\\.gg\\.?$")) return;
+            connecting = false;
+            connected = true;
+            LOGGER.info("Connected to TubNet[phase:play|OK]");
+            this.gameMode = GameMode.LOBBY;
+            this.currentParty = new TubnetParty(
+                    new TubnetPlayer(
+                            MinecraftClient.getInstance().getSession().getUsername(),
+                            null
+                    ),
+                    null,
+                    null
+            );
             try {
-                InetSocketAddress socketAddress = (InetSocketAddress) handler.getConnection().getAddress();
-                if (socketAddress == null) return;
-                if (!socketAddress.getHostName().toLowerCase().matches("^((.*)\\.)?tubnet\\.gg\\.?$")) return;
-                connecting = false;
-                connected = true;
-                LOGGER.info("Connected to TubNet[phase:play|OK]");
-                this.gameMode = GameMode.LOBBY;
-                this.currentParty = new TubnetParty(
-                        new TubnetPlayer(
-                                MinecraftClient.getInstance().getSession().getUsername(),
-                                null
-                        ),
-                        null,
-                        null
-                );
-                TubnetConnectionEvents.CONNECT.invoker().onConnect();
-            } catch (ClassCastException ex) {
-                // Singleplayer Error - Ignore
+                this.socket = new SocketCore();
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
             }
+
+            TubnetConnectionEvents.CONNECT.invoker().onConnect();
         });
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             if (!connected) return;
@@ -103,6 +109,7 @@ public class TubnetCore {
             this.currentParty = null;
             LOGGER.info("Disconnected from TubNet[phase:play]");
             TubnetConnectionEvents.DISCONNECT.invoker().onDisconnect();
+            SocketCore.socket.close();
         });
         ChatMessageEvent.EVENT.register((msg) -> {
             if (!connected) return ActionResult.PASS;
