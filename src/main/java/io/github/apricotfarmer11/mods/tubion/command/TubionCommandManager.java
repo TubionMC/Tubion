@@ -19,8 +19,6 @@ import net.minecraft.text.Style;
 import net.minecraft.util.Formatting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.print.attribute.HashPrintJobAttributeSet;
 import java.io.IOException;
 
 public class TubionCommandManager {
@@ -54,7 +52,7 @@ public class TubionCommandManager {
                         e.printStackTrace();
                     }
                     net.minecraft.text.Text updateText = TextUtils.literal("No new updates");
-                    if (!version.equals(TubionMod.VERSION)) {
+                    if (!version.equals("v" + TubionMod.VERSION)) {
                         updateText = TextUtils.literal("Latest version: " + version + " (click ")
                                 .append(
                                         TextUtils.literal("here")
