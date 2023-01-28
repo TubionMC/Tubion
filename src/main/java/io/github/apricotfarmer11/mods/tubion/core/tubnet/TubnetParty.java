@@ -2,11 +2,9 @@ package io.github.apricotfarmer11.mods.tubion.core.tubnet;
 
 import io.github.apricotfarmer11.mods.tubion.core.helper.PlayerHelper;
 import io.github.apricotfarmer11.mods.tubion.event.ChatMessageEvent;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.ActionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import oshi.software.os.mac.MacInternetProtocolStats;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

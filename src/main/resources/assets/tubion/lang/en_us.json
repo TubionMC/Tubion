@@ -6,6 +6,8 @@
   "text.tubion.settings.lobby.hideDuplicateWelcomeMessage.tooltip": "When you join a lobby, the welcome message might pop-up again.",
   "text.tubion.settings.lobby.betterNpcMessages": "Better NPC Messages",
   "text.tubion.settings.lobby.betterNpcMessages.tooltip": "Improves the NPC Messages in the lobby by removing whitespace.",
+  "text.tubion.settings.lobby.hideTips": "Hide \"Did you know\" Messages",
+  "text.tubion.settings.lobby.hideTips.tooltip": "Hides \"Did you know\" messages from the chat.",
 
   "text.tubion.settings.lightStrike.title": "Light Strike",
   "text.tubion.settings.lightStrike.broadSwordGlint": "Broad Sword Glint",

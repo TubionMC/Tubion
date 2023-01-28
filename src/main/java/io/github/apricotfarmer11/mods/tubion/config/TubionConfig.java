@@ -16,6 +16,7 @@ public class TubionConfig {
     public boolean autoGg = false;
     public boolean autoGf = false;
     public boolean broadSwordGlint = true;
+    public boolean hideTips = true;
 
 
     public enum TubnetTweaksPackTypes {

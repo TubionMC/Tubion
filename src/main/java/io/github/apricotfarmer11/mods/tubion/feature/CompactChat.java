@@ -1,7 +1,6 @@
 package io.github.apricotfarmer11.mods.tubion.feature;
 
 import io.github.apricotfarmer11.mods.tubion.TubionMod;
-import io.github.apricotfarmer11.mods.tubion.core.tubnet.TubnetCore;
 import io.github.apricotfarmer11.mods.tubion.misc.ChatHudMixin$VisibleMessageGetter;
 import io.github.apricotfarmer11.mods.tubion.multiport.TextUtils;
 import net.minecraft.client.gui.hud.ChatHud;
@@ -13,7 +12,6 @@ import net.minecraft.util.Formatting;
 import java.util.List;
 
 import static io.github.apricotfarmer11.mods.tubion.feature.discord.TubnetDiscordIntegration.CLIENT;
-
 public class CompactChat {
     private static String lastMessage = "";
     private static int amount;

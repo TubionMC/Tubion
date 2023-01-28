@@ -10,10 +10,8 @@ import io.socket.client.Socket;
 import io.socket.engineio.parser.Base64;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.RunArgs;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
-import net.minecraft.structure.OceanMonumentGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +23,16 @@ import java.security.PublicKey;
 public class SocketCore {
     private static final MinecraftClient CLIENT = MinecraftClient.getInstance();
     private static final Logger LOGGER = LoggerFactory.getLogger("Tubion/Socket");
-    private static final String WEBSOCKET_URL = FabricLoader.getInstance().isDevelopmentEnvironment() ? "ws://localhost:3000" : "wss://tubion-api.minestadon.net";
+    public static final String API_URL = "s://tubion-api.minestadon.net"; // FabricLoader.getInstance().isDevelopmentEnvironment() ? "localhost:3000" : "tubion-api.minestadon.net";
+    private static final String WEBSOCKET_URL = "http" + API_URL;
     public static Socket socket;
     private boolean authenticated = false;
     public SocketCore() throws URISyntaxException {
         Socket socket = IO.socket(WEBSOCKET_URL);
+        LOGGER.info("Created connection!");
         this.socket = socket;
         socket.on("message", packet -> {
+            LOGGER.debug("TUBION SOCKET PACKET: " + packet[0].toString());
             JsonElement object = JsonParser.parseString(packet[0].toString());
             switch(object.getAsJsonObject().get("code").getAsString()) {
                 case "START_AUTH": {
@@ -76,9 +77,12 @@ public class SocketCore {
                     break;
                 }
                 default: {
-                    LOGGER.info(packet[0].toString());
+                    break;
                 }
             }
+        });
+        socket.on("disconnect", (reason) -> {
+            LOGGER.info("Disconnected from socket: " + reason[0].toString());
         });
         socket.connect();
     }

@@ -18,10 +18,10 @@ import java.util.zip.ZipInputStream;
 public class SDKInitializer {
     public static Logger LOGGER = LoggerFactory.getLogger("Tubion/Discord");
     public static void loadSDK() {
-        LOGGER.info("Loading Discord GameSDK v3.1.0");
+        LOGGER.info("[SDKInitializer] Loading Discord GameSDK v3.1.0");
         File home = new File("config/tubion/discord");
         if (!home.exists() && !home.mkdirs()) {
-            throw new IllegalStateException("[DiscordGameSDKLoader] For some reason, FS did not let us create the Discord GameSDK folder :(");
+            throw new IllegalStateException("[SDKInitializer] For some reason, the filesystem did not let us create the Discord GameSDK folder :(");
         }
         String fileName;
         if (SystemUtils.IS_OS_WINDOWS)
@@ -41,7 +41,7 @@ public class SDKInitializer {
             try {
                 downloadSDK(sdk, fileName);
             } catch(IOException ex) {
-                LOGGER.error("[DiscordGameSDKLoader] Failed to download SDK from Discord: " + ex.getMessage());
+                LOGGER.error("[SDKInitializer] Failed to download SDK from Discord: " + ex.getMessage());
             }
         }
         if (!jni.exists()) {
@@ -88,6 +88,6 @@ public class SDKInitializer {
             System.load(sdk.getAbsolutePath());
         System.load(jni.getAbsolutePath());
         Core.initDiscordNative(sdk.getAbsolutePath());
-        LOGGER.info("[DiscordGameSDKLoader] Discord GameSDK Library 3.1.0 initialized");
+        LOGGER.info("[SDKInitializer] Discord GameSDK Library 3.1.0 initialized");
     }
 }

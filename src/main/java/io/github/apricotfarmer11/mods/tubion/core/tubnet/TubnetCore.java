@@ -10,6 +10,7 @@ import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.LightStrike;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.Lobby;
 import io.github.apricotfarmer11.mods.tubion.core.websocket.SocketCore;
 import io.github.apricotfarmer11.mods.tubion.event.ChatMessageEvent;
+import io.github.apricotfarmer11.mods.tubion.event.GameHudEvents;
 import io.github.apricotfarmer11.mods.tubion.multiport.TextUtils;
 import io.netty.channel.local.LocalAddress;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
@@ -28,6 +29,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.URISyntaxException;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +40,7 @@ public class TubnetCore {
 
     // Regex and stuff
     private static final Pattern SERVER_IDENTIFIER_PATTERN = Pattern.compile("tubnet\\.gg ([a-z0-9]{5})");
-    private static final Pattern PARTY_CREATED_PATTERN = Pattern.compile("(?:You have joined ([a-zA-Z0-9_]{2,16})'s party!|Party has been created!|[a-zA-Z0-9_]{2,16} has been invited to the party by ([a-zA-Z0-9_]{2,16})!)");
+    private static final Pattern PARTY_CREATED_PATTERN = Pattern.compile("(?:You have joined \"([a-zA-Z0-9_]{2,16})\"'s party!|Party has been created!|\"[a-zA-Z0-9_]{2,16}\" has been invited to the party by ([a-zA-Z0-9_]{2,16})!)");
     private static final Pattern PARTY_DELETED_PATTERN = Pattern.compile("(?:You were kicked from your party\\.|You left the party\\.)");
     private static final Pattern PRIVATE_MESSAGE_PREFIX_PATTERN = Pattern.compile("([a-zA-Z0-9_]{2,16}) -> You");
     private static final Pattern DISCORD_PARTY_JOIN = Pattern.compile("tubionPartyJoin\\.(\\d+)\\.([0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12})");
@@ -108,7 +110,11 @@ public class TubnetCore {
             connected = false;
             this.currentParty = null;
             LOGGER.info("Disconnected from TubNet[phase:play]");
-            TubnetConnectionEvents.DISCONNECT.invoker().onDisconnect();
+            try {
+                TubnetConnectionEvents.DISCONNECT.invoker().onDisconnect();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             SocketCore.socket.close();
         });
         ChatMessageEvent.EVENT.register((msg) -> {
@@ -150,6 +156,7 @@ public class TubnetCore {
                 }
                 return ActionResult.CONSUME;
             }
+
             return ActionResult.PASS;
         });
     }
@@ -160,7 +167,7 @@ public class TubnetCore {
             if (scoreboard != null) {
                 ScoreboardObjective targetObjective = scoreboard.getObjectiveForSlot(1);
                 if (targetObjective == null) return;
-                String serverGameMode = targetObjective.getDisplayName().getString().toLowerCase().replaceAll("[^a-z0-9 ]", "");
+                String serverGameMode = targetObjective.getDisplayName().getString().toLowerCase().replaceAll("[^a-z0-9]| ", "");
                 if (serverGameMode.equals("tubnet")) {
                     this.gameMode = GameMode.LOBBY;
                     if (!(this.currentGame instanceof Lobby)) this.currentGame = new Lobby();
@@ -173,6 +180,17 @@ public class TubnetCore {
                 } else if (serverGameMode.equals("battle royale")) {
                     this.gameMode = GameMode.BATTLE_ROYALE;
                     if (!(this.currentGame instanceof BattleRoyale)) this.currentGame = new BattleRoyale();
+                    TubnetGame GAME = this.currentGame;
+                    AtomicBoolean bl = new AtomicBoolean(false);
+                    GameHudEvents.TITLE_SET.register((text) -> {
+                        if (bl.get()) return;
+                        if (this.currentGame == GAME) {
+                            if (text.getString().contains("go!")) {
+                                // Start
+                            }
+                        }
+                        bl.set(true);
+                    });
                 }
                 this.currentGame.recomputeTeamType();
                 ScoreboardPlayerScore[] scoreboardPlayerScores = scoreboard.getAllPlayerScores(targetObjective).toArray(ScoreboardPlayerScore[]::new);

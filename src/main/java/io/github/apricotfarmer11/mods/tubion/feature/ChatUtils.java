@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 public class ChatUtils {
     private static final MinecraftClient CLIENT = MinecraftClient.getInstance();
     private static int lobbyEntered = 0;
+    private static final Pattern DYKREGEX = Pattern.compile("^\n . Did you know\\?\n\n (.*)\n$");
     public ChatUtils() {
         TubnetConnectionEvents.DISCONNECT.register(() -> {
             lobbyEntered = 0;
@@ -27,8 +28,13 @@ public class ChatUtils {
         ActionResult result = ActionResult.PASS;
         switch (TubnetCore.getInstance().getGameMode()) {
             case LOBBY: {
+                Matcher m = DYKREGEX.matcher(msg.getString());
+                if (config.hideTips && m.find()) {
+                    result = ActionResult.CONSUME;
+                    break;
+                }
                 if (config.hideWelcomeMessage && msg.getString().contains("Welcome to New Block City")) {
-                    if (lobbyEntered++ > 0) {
+                    if (++lobbyEntered > 1) {
                         result = ActionResult.CONSUME;
                         break;
                     }

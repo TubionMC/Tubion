@@ -38,7 +38,9 @@ repositories {
     maven("https://maven.shedaniel.me")
     maven("https://maven.terraformersmc.com/releases")
     maven("https://api.modrinth.com/maven")
+    maven("https://repo.essential.gg/repository/maven-public")
     mavenCentral()
+    gradlePluginPortal()
 }
 dependencies {
     // Fabric API
@@ -57,10 +59,13 @@ dependencies {
     include(modApi("me.shedaniel.cloth:cloth-config-fabric:${gameVersionToClothVersion[platform.mcVersionStr]}") {
         exclude("net.fabricmc.fabric-api")
     })
+    modImplementation(include("gg.essential:elementa-1.18.1-fabric:573+pull-97")!!)
     modImplementation("com.terraformersmc:modmenu:${gameVersionToModMenuVersion[platform.mcVersionStr]}")
     // Dependencies
     include(implementation("com.github.JnCrMx:discord-game-sdk4j:0.5.5") as Any)
     include(implementation("io.socket:socket.io-client:2.1.0") as Any)
+    include(implementation("io.socket:engine.io-client:2.1.0") as Any)
+    include(implementation("org.json:json:20220924") as Any)
     if (platform.mcVersionStr == "1.18.2") {
         runtimeOnly("org.joml:joml:1.10.5")
         modRuntimeOnly("maven.modrinth:auth-me:3.1.0")
@@ -88,7 +93,7 @@ publishing {
     publications {
         create<MavenPublication>("Tubion") {
             groupId = "io.github.apricotfarmer11"
-            artifactId = "tubion-fabric-" + platform.mcVersionStr
+            artifactId = "tubion-" + platform.mcVersionStr
 
             from(components["java"])
         }

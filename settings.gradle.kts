@@ -10,6 +10,7 @@ pluginManagement {
     }
     plugins {
         id("gg.essential.multi-version.root") version "0.1.18"
+
     }
 }
 

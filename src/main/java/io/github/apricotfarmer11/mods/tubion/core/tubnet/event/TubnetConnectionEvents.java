@@ -34,6 +34,6 @@ public final class TubnetConnectionEvents {
         void onConnect();
     }
     public interface Disconnect {
-        void onDisconnect();
+        void onDisconnect() throws NoSuchFieldException, IllegalAccessException;
     }
 }

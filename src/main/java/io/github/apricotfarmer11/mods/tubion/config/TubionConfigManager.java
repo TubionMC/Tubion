@@ -81,7 +81,7 @@ public class TubionConfigManager {
             MinecraftClient.getInstance().reloadResources();
         }
         if (TubnetCore.getInstance().connected && (beforeSavedConfig.enableDiscordRPC != config.enableDiscordRPC)) {
-            TubionMod.discordIntegration.reloadClient();
+            TubionMod.getInstance().initDiscord();
         }
         try {
             beforeSavedConfig = gsonSerializer.fromJson(new FileReader(configFile), TubionConfig.class);
@@ -127,6 +127,16 @@ public class TubionConfigManager {
                         .setTooltip(TextUtils.translatable("text.tubion.settings.lobby.betterNpcMessages.tooltip"))
                         .setSaveConsumer(val -> {
                             TubionConfigManager.getConfig().betterNpcMessages = val;
+                        })
+                        .build()
+        );
+        lobbyCategory.addEntry(
+                configBuilder.entryBuilder()
+                        .startBooleanToggle(TextUtils.translatable("text.tubion.settings.lobby.hideTips"), TubionConfigManager.getConfig().hideTips)
+                        .setDefaultValue(true)
+                        .setTooltip(TextUtils.translatable("text.tubion.settings.lobby.hideTips.tooltip"))
+                        .setSaveConsumer(val -> {
+                            TubionConfigManager.getConfig().hideTips = val;
                         })
                         .build()
         );

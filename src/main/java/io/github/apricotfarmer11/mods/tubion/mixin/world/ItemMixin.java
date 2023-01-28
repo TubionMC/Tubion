@@ -5,7 +5,6 @@ import io.github.apricotfarmer11.mods.tubion.core.tubnet.TubnetCore;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.GameMode;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
 import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

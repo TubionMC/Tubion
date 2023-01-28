@@ -10,10 +10,10 @@ import io.github.apricotfarmer11.mods.tubion.TubionMod;
 import io.github.apricotfarmer11.mods.tubion.core.helper.ChatHelper;
 import io.github.apricotfarmer11.mods.tubion.core.helper.PlayerHelper;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.TubnetCore;
-import io.github.apricotfarmer11.mods.tubion.core.tubnet.event.TubnetConnectionEvents;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.GameMode;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.TeamType;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.TubnetGame;
+import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.Lobby;
 import io.github.apricotfarmer11.mods.tubion.event.ScoreboardEvents;
 import io.github.apricotfarmer11.mods.tubion.event.WorldEvents;
 import io.github.apricotfarmer11.mods.tubion.multiport.TextUtils;
@@ -31,72 +31,65 @@ import java.util.concurrent.CompletableFuture;
 public class TubnetDiscordIntegration {
     public static final Logger LOGGER = LoggerFactory.getLogger("Tubion/Discord");
     public static final MinecraftClient CLIENT = MinecraftClient.getInstance();
-    public static Core discordCore;
-    public static final MutableText BASE = ChatHelper.getChatPrefixWithFeature(
-            TextUtils.literal("Discord").formatted(Formatting.BOLD, Formatting.DARK_PURPLE).append(TextUtils.literal("").formatted(Formatting.RESET))
+    public static final Text CHAT_MSG_BASE = ChatHelper.getChatPrefixWithFeature(
+            TextUtils.literal("Discord")
+                    .formatted(Formatting.DARK_PURPLE, Formatting.BOLD)
     );
-    private String last = "";
-    private Instant time;
+    public Core discordGameSdk;
+
+    private Instant timeStart;
     private String gamemode;
-    private String gamestate;
-    private boolean inQueue = false;
+    private String lastGamemode = "";
+    private boolean active = true;
+    private boolean queuing = false;
 
     public UUID currentPartyUUID;
     public UUID currentPartySecret;
     public TubnetDiscordIntegration() {
+        if (TubionMod.getConfig().enableDiscordRPC && this.discordGameSdk == null) {
+            initialise();
+        }
+        // Register event listeners
         WorldEvents.INIT.register(() -> {
-            if (!(TubnetCore.getInstance().connected || TubnetCore.getInstance().connecting)) return;
-            time = Instant.now();
-            gamemode = "Lobby";
-            gamestate = "";
-            inQueue = false;
+            // Check if this instance is active
+            if (!active || discordGameSdk == null || !discordGameSdk.isOpen()) return;
+
+            // Reset activity
+            timeStart = Instant.now();
             CompletableFuture.runAsync(() -> {
-                if (TubionMod.getConfig().enableDiscordRPC) {
-                    initializeRpc();
+                if (TubionMod.getConfig().enableDiscordRPC && this.discordGameSdk == null) {
+                    initialise();
                 }
             });
         });
-        TubnetConnectionEvents.DISCONNECT.register(() -> {
-            if (discordCore != null && discordCore.isOpen()) {
-                discordCore.activityManager().clearActivity();
-                try {
-                    discordCore.close();
-                } catch(GameSDKException ex) {}
-                discordCore = null;
-            }
-        });
-        ClientTickEvents.END_CLIENT_TICK.register((client) -> {
-            if (discordCore != null && discordCore.isOpen()) {
-                try {
-                    discordCore.runCallbacks();
-                } catch(Exception ex) {
-                    LOGGER.info("Error when running callbacks: " + ex);
-                }
+        ClientTickEvents.END_WORLD_TICK.register(world -> {
+            if (!active || discordGameSdk == null || !discordGameSdk.isOpen()) return;
+            try {
+                discordGameSdk.runCallbacks();
+            } catch(GameSDKException error) {
+                LOGGER.error("Failed to run Discord Callbacks: " + error);
             }
         });
         ScoreboardEvents.SCOREBOARD_UPDATE.register(() -> {
-            if (discordCore != null && discordCore.isOpen()) {
-                updateRpc();
-            }
+            if (!active || discordGameSdk == null || !discordGameSdk.isOpen()) return;
+            updateActivity();
         });
     }
-    public void reloadClient() {
-        if (discordCore != null) {
-            if (discordCore.isOpen()) discordCore.close();
-            discordCore = null;
-        }
-        if (!TubionMod.getConfig().enableDiscordRPC) {
-            CLIENT.inGameHud.getChatHud().addMessage(BASE.shallowCopy().append("RPC is not enabled!"));
-            return;
-        }
-        CLIENT.inGameHud.getChatHud().addMessage(BASE.shallowCopy().append("Reconnecting to Discord"));
-        if (initializeRpc()) {
-            CLIENT.inGameHud.getChatHud().addMessage(BASE.shallowCopy().append("Connected to Discord"));
-        } else {
-            CLIENT.inGameHud.getChatHud().addMessage(BASE.shallowCopy().append("Failed to connect to Discord. Run ").append(TextUtils.literal("/tubion discord reconnect").setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tubion discord reconnect"))).formatted(Formatting.BOLD).append(" to attempt to reconnect.")));
-        }
+    public void destroy() {
+        // Stop DiscordRPC if it is running
+        try {
+            if (discordGameSdk != null && discordGameSdk.isOpen()) {
+                // Remove any activity, then clear
+                Core saved = this.discordGameSdk;
+                this.discordGameSdk = null;
+                saved.activityManager().clearActivity();
+                saved.runCallbacks();
+                saved.close();
+            }
+        } catch(GameSDKException ex) {}
+        active = false;
     }
-    public boolean initializeRpc() {
+    public void initialise() {
         CreateParams params = new CreateParams();
         params.setClientID(1046493096512339968L);
         params.setFlags(CreateParams.Flags.NO_REQUIRE_DISCORD);
@@ -104,7 +97,7 @@ public class TubnetDiscordIntegration {
             @Override
             public void onActivityJoin(String secret) {
                 String[] data = secret.split(":");
-                PlayerHelper.sendCommand("msg " + data[1] + " tubionPartyJoin." + discordCore.userManager().getCurrentUser().getUserId() + "." + data[2]);
+                PlayerHelper.sendCommand("msg " + data[1] + " tubionPartyJoin." + discordGameSdk.userManager().getCurrentUser().getUserId() + "." + data[2]);
             }
 
             @Override
@@ -143,67 +136,64 @@ public class TubnetDiscordIntegration {
         });
 
         try {
-            discordCore = new Core(params);
+            discordGameSdk = new Core(params);
             LOGGER.info("Successfully initialized Discord GameSDK!");
-            return true;
         } catch(GameSDKException ex) {
             LOGGER.error("An error occurred while attempting to initialize the SDK:\n" + ex.toString());
             assert MinecraftClient.getInstance().player != null;
-            CLIENT.inGameHud.getChatHud().addMessage(this.BASE.shallowCopy().append("Failed to connect to Discord. Run ").append(TextUtils.literal("/tubion discord reconnect").setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tubion discord reconnect"))).formatted(Formatting.BOLD).append(" to attempt to reconnect.")));
-            return false;
+            CLIENT.inGameHud.getChatHud().addMessage(this.CHAT_MSG_BASE.shallowCopy().append("Failed to connect to Discord. Run ").append(TextUtils.literal("/tubion discord reconnect").setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tubion discord reconnect"))).formatted(Formatting.BOLD).append(" to attempt to reconnect.")));
         }
     }
-    public void updateRpc() {
-        if (discordCore == null && !discordCore.isOpen()) return;
-        if (!TubionMod.getConfig().enableDiscordRPC) return;
+    public void updateActivity() {
         try (Activity activity = new Activity()) {
-            TubnetCore Tubnet = TubnetCore.getInstance();
-            TubnetGame game = Tubnet.getCurrentGame();
-            if (game != null) {
-                gamemode = game.getName();
-                if (Tubnet.getGameMode() == GameMode.CRYSTAL_RUSH) {
-                    if (game.getTeamType() == TeamType.SOLOS) {
+            TubnetCore infoHaus = TubnetCore.getInstance();
+            TubnetGame currentGame = TubnetCore.getInstance().getCurrentGame();
+            String gamestate = "";
+
+            if (currentGame != null) {
+                gamemode = currentGame.getName();
+                if (infoHaus.getGameMode() == GameMode.CRYSTAL_RUSH) {
+                    if (currentGame.getTeamType() == TeamType.SOLOS) {
                         gamemode += " (Solos)";
                     } else {
                         gamemode += " (Duos)";
                     }
                 }
-                if (game.isInQueue()) {
+                if (currentGame.isInQueue()) {
                     gamestate = "In queue";
-                    inQueue = true;
-                } else if (inQueue) {
-                    time = Instant.now();
-                    inQueue = false;
+                    queuing = true;
+                } else if (queuing) {
+                    timeStart = Instant.now();
+                    queuing = false;
                     gamestate = "In game";
-                }
-                if (!last.equals(gamemode)) {
-                    LOGGER.info("New game identified: " + gamemode);
-                }
-                last = gamemode;
-                activity.setDetails(gamemode);
-                if (Tubnet.getGameMode() == GameMode.LOBBY) {
-                    activity.setState("In the Lobby");
-                } else {
-                    activity.setState(gamestate);
-                }
+                } else if (currentGame instanceof Lobby) gamestate = "Hovering around the lobby";
+
+                if (!gamemode.equals(lastGamemode)) LOGGER.info("Setting activity to " + gamemode);
+                lastGamemode = gamemode;
             } else {
                 gamemode = "";
                 gamestate = "";
                 activity.setDetails("Unknown");
                 activity.setState("");
             }
-            if (time == null) time = Instant.now();
-            activity.timestamps().setStart(Instant.ofEpochSecond(time.toEpochMilli()));
+            activity.setDetails(gamemode);
+            activity.setState(gamestate);
+            if (timeStart == null) timeStart = Instant.now();
+            activity.timestamps().setStart(Instant.ofEpochSecond(timeStart.toEpochMilli()));
+
             activity.assets().setLargeImage("tubnet_logo");
             activity.assets().setLargeText("Powered by Tubion v" + TubionMod.VERSION);
-            activity.party().setID(Tubnet.currentParty.partyId.toString());
-            String secret = "////:" + CLIENT.getSession().getUsername() + ":" + Tubnet.currentParty.partyIdSecret.toString();
+
+            String secret = "////:" + CLIENT.getSession().getUsername() + ":" + infoHaus.currentParty.partyIdSecret.toString();
             activity.secrets().setJoinSecret(secret);
-            activity.party().size().setCurrentSize(Tubnet.currentParty.members.size());
+
+            activity.party().size().setCurrentSize(infoHaus.currentParty.members.size());
             activity.party().size().setMaxSize(4);
-            discordCore.activityManager().updateActivity(activity);
+            activity.party().setID(infoHaus.currentParty.partyId.toString());
+
+            discordGameSdk.activityManager().updateActivity(activity);
         } catch(GameSDKException ex) {
-            LOGGER.error("Failed to send Activity Update: " + ex.toString());
+            LOGGER.info("Failed to update Rich Presence");
         }
     }
 }

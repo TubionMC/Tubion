@@ -27,6 +27,7 @@ public class CrystalRush implements TubnetGame {
         if (scoreboard == null) return;
         ScoreboardObjective objective = scoreboard.getObjectiveForSlot(1);
         ScoreboardPlayerScore[] scoreboardPlayerScores = scoreboard.getAllPlayerScores(objective).toArray(ScoreboardPlayerScore[]::new);
+        if (scoreboardPlayerScores.length == 0) return;
         String teamIdentifier = TubnetCore.getDecoratedPlayerName(scoreboardPlayerScores[scoreboardPlayerScores.length - 1]).getString();
 
         if (teamIdentifier.contains("solos")) {

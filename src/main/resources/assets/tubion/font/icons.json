@@ -1,0 +1,13 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "tubion:gui/custom/tubion_ranks.png",
+      "height": 8,
+      "ascent": 8,
+      "chars": [
+        "\u132a\u132b\u132c"
+      ]
+    }
+  ]
+}

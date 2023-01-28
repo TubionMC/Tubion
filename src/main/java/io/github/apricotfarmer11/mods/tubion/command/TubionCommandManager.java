@@ -1,10 +1,15 @@
 package io.github.apricotfarmer11.mods.tubion.command;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 //#if MC>=11902
 //$$ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 //$$ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 //#else
+import com.mojang.brigadier.tree.CommandNode;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.mojang.brigadier.tree.RootCommandNode;
+import io.github.apricotfarmer11.mods.tubion.core.tubnet.event.TubnetConnectionEvents;
 import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 //#endif
@@ -20,6 +25,9 @@ import net.minecraft.util.Formatting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class TubionCommandManager {
     private static CommandDispatcher<FabricClientCommandSource> dispatcher;
@@ -30,19 +38,39 @@ public class TubionCommandManager {
         this.dispatcher = dispatcher;
     }
     public void loadCommands() {
+        TubnetConnectionEvents.CONNECT.register(() -> {
+            registerCommands();
+        });
+        TubnetConnectionEvents.DISCONNECT.register(() -> {
+            CommandNode<FabricClientCommandSource> rootNode = (CommandNode<FabricClientCommandSource>) dispatcher.getRoot();
+
+            Field childrenField = rootNode.getClass().getDeclaredField("children");
+            childrenField.setAccessible(true);
+            LinkedHashMap<String, CommandNode<FabricClientCommandSource>> children = (LinkedHashMap<String, CommandNode<FabricClientCommandSource>>) childrenField.get(rootNode);
+            children.remove("tubion");
+            LOGGER.info("Removed /tubion!");
+
+            Field literalField = rootNode.getClass().getDeclaredField("literals");
+            literalField.setAccessible(true);
+            LinkedHashMap<String, LiteralCommandNode<FabricClientCommandSource>> literals = (LinkedHashMap<String, LiteralCommandNode<FabricClientCommandSource>>) literalField.get(rootNode);
+            literals.remove("tubion");
+            LOGGER.info("Removed /tubion from literals!");
+        });
+    }
+    private void registerCommands() {
         this.dispatcher.register(ClientCommandManager.literal("tubion")
                 .then(
                         DiscordSubcommand.DISCORD_SUBCOMMAND
                 )
-                        .then(
-                                ClientCommandManager.literal("settings")
-                                        .executes(context -> {
-                                            CLIENT.setScreen(
-                                                    TubionConfigManager.getConfigurationBuilder().build()
-                                            );
-                                            return 1;
-                                        })
-                        )
+                .then(
+                        ClientCommandManager.literal("settings")
+                                .executes(context -> {
+                                    CLIENT.executeSync(() -> CLIENT.setScreen(
+                                            TubionConfigManager.getConfigurationBuilder().build()
+                                    ));
+                                    return 1;
+                                })
+                )
                 .executes(context -> {
                     String version = TubionMod.VERSION;
                     try {
@@ -51,7 +79,7 @@ public class TubionCommandManager {
                         LOGGER.error("Failed to fetch latest version from Modrinth.");
                         e.printStackTrace();
                     }
-                    net.minecraft.text.Text updateText = TextUtils.literal("No new updates");
+                    net.minecraft.text.Text updateText = TextUtils.literal("No new updates are available. Try checking later!");
                     if (!version.equals("v" + TubionMod.VERSION)) {
                         updateText = TextUtils.literal("Latest version: " + version + " (click ")
                                 .append(

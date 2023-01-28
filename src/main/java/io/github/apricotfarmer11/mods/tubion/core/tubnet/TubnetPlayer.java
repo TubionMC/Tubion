@@ -1,10 +1,5 @@
 package io.github.apricotfarmer11.mods.tubion.core.tubnet;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.GameProfileRepository;
-import com.mojang.authlib.yggdrasil.YggdrasilGameProfileRepository;
-import net.minecraft.client.MinecraftClient;
-
 import javax.annotation.Nullable;
 
 public class TubnetPlayer {

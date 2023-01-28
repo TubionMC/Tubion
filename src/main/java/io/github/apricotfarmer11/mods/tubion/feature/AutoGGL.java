@@ -6,7 +6,6 @@ import io.github.apricotfarmer11.mods.tubion.core.tubnet.TubnetCore;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.GameMode;
 import io.github.apricotfarmer11.mods.tubion.event.ChatMessageEvent;
 import io.github.apricotfarmer11.mods.tubion.event.GameHudEvents;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.ActionResult;
 
 import java.util.Arrays;
@@ -24,13 +23,11 @@ public class AutoGGL {
                 // GLHF
                 if (TubionMod.getConfig().autoGf && text.getString().contains("go!")) {
                     PlayerHelper.sendChatMessage("glhf");
-                } else if (TubionMod.getConfig().autoGg && (text.getString().contains("game over") || text.getString().contains("game won"))) {
-                    PlayerHelper.sendChatMessage("gg");
                 }
             }
         });
         ChatMessageEvent.EVENT.register(message -> {
-            if (TubionMod.getConfig().autoGg && message.getString().contains("Your team took")) {
+            if (Arrays.stream(COMPETITIVE_GAMES).anyMatch(a -> a == TubnetCore.getInstance().getGameMode()) && TubionMod.getConfig().autoGg && (message.getString().contains("Game finished") || message.getString().contains("Game over") || message.getString().contains("Your team took"))) {
                 PlayerHelper.sendChatMessage("gg");
             }
             return ActionResult.PASS;

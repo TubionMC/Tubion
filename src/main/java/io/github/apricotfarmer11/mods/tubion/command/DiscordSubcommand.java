@@ -1,7 +1,5 @@
 package io.github.apricotfarmer11.mods.tubion.command;
 
-import com.mojang.brigadier.arguments.ArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -32,7 +30,7 @@ public class DiscordSubcommand {
                     throw new SimpleCommandExceptionType(TextUtils.literal("You cannot run this command outside of TubNet!")).create();
                 }
                 MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(
-                        TubionMod.discordIntegration.BASE.shallowCopy()
+                        TubionMod.discordIntegration.CHAT_MSG_BASE.shallowCopy()
                                 .append("Click ")
                                 .append(
                                         TextUtils.literal("here")
@@ -62,7 +60,7 @@ public class DiscordSubcommand {
                             throw new SimpleCommandExceptionType(TextUtils.literal("You cannot run this command outside of TubNet!")).create();
                         }
                         try {
-                            TubionMod.discordIntegration.reloadClient();
+                            TubionMod.getInstance().initDiscord();
                         } catch (Exception ex) {} // Ignore error
                         return 1;
                     })
@@ -73,16 +71,16 @@ public class DiscordSubcommand {
                         if (!TubnetCore.getInstance().connected) {
                             throw new SimpleCommandExceptionType(TextUtils.literal("You cannot run this command outside of TubNet!")).create();
                         }
-                        if (TubionMod.discordIntegration.discordCore == null) return 1;
-                        if (TubionMod.discordIntegration != null && TubionMod.discordIntegration.discordCore != null) {
-                            TubionMod.discordIntegration.discordCore.overlayManager().openGuildInvite("e3bsmguYZU");
+                        if (TubionMod.discordIntegration != null) {
+                            // https://discord.gg/gueZmJHJpu
+                            TubionMod.discordIntegration.discordGameSdk.overlayManager().openGuildInvite("gueZmJHJpu");
                         } else {
                             ctx.getSource().sendFeedback(
                                     TextUtils.literal("\uA0C9 Click here to join the Tubion Discord")
                                             .setStyle(Style.EMPTY.withHoverEvent(
                                                     new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextUtils.literal("Click here to join the Tubion Discord"))
                                             ).withClickEvent(
-                                                    new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/e3bsmguYZU")
+                                                    new ClickEvent(ClickEvent.Action.OPEN_URL, "https://discord.gg/gueZmJHJpu")
                                             ))
                                             .formatted(Formatting.BOLD, Formatting.DARK_PURPLE)
                             );
@@ -97,7 +95,7 @@ public class DiscordSubcommand {
                                             throw new SimpleCommandExceptionType(TextUtils.literal("You cannot run this command outside of TubNet!")).create();
                                         }
                                         Long userId = LongArgumentType.getLong(ctx, "discordUserId");
-                                        TubionMod.discordIntegration.discordCore.activityManager().sendRequestReply(userId, ActivityJoinRequestReply.YES);
+                                        TubionMod.discordIntegration.discordGameSdk.activityManager().sendRequestReply(userId, ActivityJoinRequestReply.YES);
                                         return 1;
                                     })
                             )
@@ -109,7 +107,7 @@ public class DiscordSubcommand {
                                             throw new SimpleCommandExceptionType(TextUtils.literal("You cannot run this command outside of TubNet!")).create();
                                         }
                                         Long userId = LongArgumentType.getLong(ctx, "discordUserId");
-                                        TubionMod.discordIntegration.discordCore.activityManager().sendRequestReply(userId, ActivityJoinRequestReply.NO);
+                                        TubionMod.discordIntegration.discordGameSdk.activityManager().sendRequestReply(userId, ActivityJoinRequestReply.NO);
                                         return 1;
                                     })
                             )
@@ -121,7 +119,7 @@ public class DiscordSubcommand {
                                             throw new SimpleCommandExceptionType(TextUtils.literal("You cannot run this command outside of TubNet!")).create();
                                         }
                                         Long userId = LongArgumentType.getLong(ctx, "discordUserId");
-                                        TubionMod.discordIntegration.discordCore.activityManager().sendRequestReply(userId, ActivityJoinRequestReply.IGNORE);
+                                        TubionMod.discordIntegration.discordGameSdk.activityManager().sendRequestReply(userId, ActivityJoinRequestReply.IGNORE);
                                         return 1;
                                     })
                             )
