@@ -12,8 +12,6 @@
     "world.ClientWorldMixin",
     "world.ItemMixin",
 
-    "network.ClientPlayNetworkHandlerMixin",
-
     "misc.MinecraftClientMixin",
 
     "render.PlayerEntityRendererMixin"
