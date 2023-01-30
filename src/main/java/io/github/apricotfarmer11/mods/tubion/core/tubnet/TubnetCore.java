@@ -8,7 +8,7 @@ import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.BattleRoyale;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.CrystalRush;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.LightStrike;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.Lobby;
-import io.github.apricotfarmer11.mods.tubion.core.websocket.SocketCore;
+import io.github.apricotfarmer11.mods.tubion.core.websocket.WebsocketHandler;
 import io.github.apricotfarmer11.mods.tubion.event.ChatMessageEvent;
 import io.github.apricotfarmer11.mods.tubion.event.GameHudEvents;
 import io.github.apricotfarmer11.mods.tubion.multiport.TextUtils;
@@ -55,7 +55,7 @@ public class TubnetCore {
     private GameMode gameMode;
     private TubnetGame currentGame;
     public TubnetParty currentParty;
-    private SocketCore socket;
+    private WebsocketHandler socket;
 
     public TubnetCore() {
         // Load event handlers
@@ -97,7 +97,7 @@ public class TubnetCore {
                     null
             );
             try {
-                this.socket = new SocketCore();
+                this.socket = new WebsocketHandler();
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
@@ -115,7 +115,8 @@ public class TubnetCore {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            SocketCore.socket.close();
+            socket.client.close();
+            this.socket = null;
         });
         ChatMessageEvent.EVENT.register((msg) -> {
             if (!connected) return ActionResult.PASS;

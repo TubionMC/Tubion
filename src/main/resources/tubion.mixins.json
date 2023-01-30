@@ -14,7 +14,9 @@
 
     "network.ClientPlayNetworkHandlerMixin",
 
-    "misc.MinecraftClientMixin"
+    "misc.MinecraftClientMixin",
+
+    "render.PlayerEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

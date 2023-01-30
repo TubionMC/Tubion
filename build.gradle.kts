@@ -59,13 +59,13 @@ dependencies {
     include(modApi("me.shedaniel.cloth:cloth-config-fabric:${gameVersionToClothVersion[platform.mcVersionStr]}") {
         exclude("net.fabricmc.fabric-api")
     })
-    modImplementation(include("gg.essential:elementa-1.18.1-fabric:573+pull-97")!!)
     modImplementation("com.terraformersmc:modmenu:${gameVersionToModMenuVersion[platform.mcVersionStr]}")
     // Dependencies
-    include(implementation("com.github.JnCrMx:discord-game-sdk4j:0.5.5") as Any)
-    include(implementation("io.socket:socket.io-client:2.1.0") as Any)
-    include(implementation("io.socket:engine.io-client:2.1.0") as Any)
-    include(implementation("org.json:json:20220924") as Any)
+    include(implementation("com.github.JnCrMx:discord-game-sdk4j:0.5.5")!!)
+    include(implementation("io.socket:socket.io-client:2.1.0")!!)
+    include(implementation("io.socket:engine.io-client:2.1.0")!!)
+    include(implementation("org.json:json:20220924")!!)
+    include(implementation("org.java-websocket:Java-WebSocket:1.5.3")!!)
     if (platform.mcVersionStr == "1.18.2") {
         runtimeOnly("org.joml:joml:1.10.5")
         modRuntimeOnly("maven.modrinth:auth-me:3.1.0")
@@ -75,6 +75,7 @@ dependencies {
         modRuntimeOnly("maven.modrinth:entityculling:1.5.1-fabric-1.18")
         modRuntimeOnly("maven.modrinth:ferrite-core:4.2.1-fabric")
         modRuntimeOnly("maven.modrinth:dynamic-fps:v2.1.0")
+        modRuntimeOnly("maven.modrinth:borderless-mining:1.1.2+1.18.2")
     }
 }
 tasks {

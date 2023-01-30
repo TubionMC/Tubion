@@ -1,12 +1,10 @@
 package io.github.apricotfarmer11.mods.tubion.mixin.network;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.apricotfarmer11.mods.tubion.TubionMod;
-import io.github.apricotfarmer11.mods.tubion.core.websocket.SocketCore;
+import io.github.apricotfarmer11.mods.tubion.core.websocket.WebsocketHandler;
 import io.github.apricotfarmer11.mods.tubion.event.ScoreboardEvents;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
@@ -14,7 +12,6 @@ import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import org.apache.commons.io.IOUtils;
-import org.checkerframework.checker.units.qual.A;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -58,7 +55,7 @@ public abstract class ClientPlayNetworkHandlerMixin {
                     case UPDATE_DISPLAY_NAME -> {
                         String json;
                         try {
-                            json = IOUtils.toString(new URI("http" + SocketCore.API_URL + "/v0/player/info/uuid/" + entry.getProfile().getId()), StandardCharsets.UTF_8);
+                            json = IOUtils.toString(new URI("http" + WebsocketHandler.API_URL + "/player/info/" + entry.getProfile().getId()), StandardCharsets.UTF_8);
                         } catch(FileNotFoundException ex) {
                             continue;
                         } catch(IOException ex) {

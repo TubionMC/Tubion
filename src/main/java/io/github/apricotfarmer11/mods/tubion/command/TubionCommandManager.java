@@ -6,13 +6,13 @@ import com.mojang.brigadier.CommandDispatcher;
 //$$ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 //$$ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 //#else
+import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+//#endif
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.event.TubnetConnectionEvents;
-import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
-import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
-//#endif
 import io.github.apricotfarmer11.mods.tubion.config.TubionConfigManager;
 import io.github.apricotfarmer11.mods.tubion.core.helper.UpdateHelper;
 import io.github.apricotfarmer11.mods.tubion.TubionMod;
@@ -42,9 +42,9 @@ public class TubionCommandManager {
             registerCommands();
         });
         TubnetConnectionEvents.DISCONNECT.register(() -> {
-            CommandNode<FabricClientCommandSource> rootNode = (CommandNode<FabricClientCommandSource>) dispatcher.getRoot();
+            CommandNode<FabricClientCommandSource> rootNode = dispatcher.getRoot();
 
-            Field childrenField = rootNode.getClass().getDeclaredField("children");
+            Field childrenField = rootNode.getClass().getEnclosingClass().getDeclaredField("children");
             childrenField.setAccessible(true);
             LinkedHashMap<String, CommandNode<FabricClientCommandSource>> children = (LinkedHashMap<String, CommandNode<FabricClientCommandSource>>) childrenField.get(rootNode);
             children.remove("tubion");
