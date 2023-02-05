@@ -7,7 +7,6 @@ import io.github.apricotfarmer11.mods.tubion.multiport.TextUtils;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.ChatHudLine;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 
 import java.util.List;
@@ -25,7 +24,7 @@ public class CompactChat {
         ChatHud chat = CLIENT.inGameHud.getChatHud();
         if (lastMessage.equals(text.getString())) {
             //#if MC>=11902
-            //$$ List<ChatHudLine.Visible> visibleMessages = ((ChatHudMixin$VisibleMessageGetter) ui).getVisibleMessages();
+            //$$ List<ChatHudLine.Visible> visibleMessages = ((ChatHudMixin$VisibleMessageGetter) chat).getVisibleMessages();
             //#else
             List<ChatHudLine> visibleMessages = ((ChatHudMixin$VisibleMessageGetter) chat).getVisibleMessages();
             //#endif

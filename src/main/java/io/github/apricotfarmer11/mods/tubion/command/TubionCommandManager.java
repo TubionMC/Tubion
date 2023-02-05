@@ -6,10 +6,10 @@ import com.mojang.brigadier.CommandDispatcher;
 //$$ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 //$$ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 //#else
-import io.github.apricotfarmer11.mods.tubion.core.tubnet.TubnetCore;
 import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 //#endif
+import io.github.apricotfarmer11.mods.tubion.core.tubnet.TubnetCore;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
