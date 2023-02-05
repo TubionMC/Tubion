@@ -9,8 +9,11 @@ import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.CrystalRush;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.LightStrike;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.Lobby;
 import io.github.apricotfarmer11.mods.tubion.core.websocket.WebsocketHandler;
-import io.github.apricotfarmer11.mods.tubion.event.ChatMessageEvent;
 import io.github.apricotfarmer11.mods.tubion.event.GameHudEvents;
+import io.github.apricotfarmer11.mods.tubion.event.api.EventManager;
+import io.github.apricotfarmer11.mods.tubion.event.api.EventTarget;
+import io.github.apricotfarmer11.mods.tubion.event.ui.ChatMessageEvent;
+import io.github.apricotfarmer11.mods.tubion.event.ui.ScoreboardUpdateEvent;
 import io.github.apricotfarmer11.mods.tubion.multiport.TextUtils;
 import io.netty.channel.local.LocalAddress;
 import net.fabricmc.fabric.api.client.networking.v1.ClientLoginConnectionEvents;
@@ -21,6 +24,7 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +62,7 @@ public class TubnetCore {
     private WebsocketHandler socket;
 
     public TubnetCore() {
+        EventManager.register(this);
         // Load event handlers
         ClientLoginConnectionEvents.INIT.register((handler, client) -> {
             SocketAddress addr = handler.getConnection().getAddress();
@@ -96,6 +101,7 @@ public class TubnetCore {
                     null,
                     null
             );
+            this.currentGame = new Lobby();
             try {
                 this.socket = new WebsocketHandler();
             } catch (URISyntaxException e) {
@@ -118,52 +124,10 @@ public class TubnetCore {
             socket.client.close();
             this.socket = null;
         });
-        ChatMessageEvent.EVENT.register((msg) -> {
-            if (!connected) return ActionResult.PASS;
-            Matcher partyJoinMatcher = PARTY_CREATED_PATTERN.matcher(msg.getString());
-            if (partyJoinMatcher.find()) {
-                String playerName = MinecraftClient.getInstance().player.getName().getString();
-                if (partyJoinMatcher.groupCount() >= 1) playerName = partyJoinMatcher.group(1);
-                currentParty = new TubnetParty(new TubnetPlayer(
-                        playerName,
-                        null
-                ), TubionMod.discordIntegration.currentPartyUUID, TubionMod.discordIntegration.currentPartySecret);
-                LOGGER.info("Party created!");
-                return ActionResult.PASS;
-            }
-            Matcher partyLeaveMatcher = PARTY_DELETED_PATTERN.matcher(msg.getString());
-            if (partyLeaveMatcher.find() && this.currentParty != null) {
-                this.currentParty.deleted = true;
-                this.currentParty = null;
-                LOGGER.info("Party deleted.");
-                currentParty = new TubnetParty(
-                        new TubnetPlayer(
-                                MinecraftClient.getInstance().getSession().getUsername(),
-                                null
-                        ),
-                        null,
-                        null
-                );
-                return ActionResult.PASS;
-            }
-            Matcher discordPartyRequestInvMatcher = DISCORD_PARTY_JOIN.matcher(msg.getString());
-            Matcher pmMatcher = PRIVATE_MESSAGE_PREFIX_PATTERN.matcher(msg.getString());
-            if (pmMatcher.find() && discordPartyRequestInvMatcher.find()) {
-                String discordId = discordPartyRequestInvMatcher.group(1);
-                String uuid = discordPartyRequestInvMatcher.group(2);
-                LOGGER.info(discordId + uuid + pmMatcher.group(1));
-                if (UUID.fromString(uuid).equals(this.currentParty.partyIdSecret)) {
-                    this.currentParty.invitePlayer(pmMatcher.group(1));
-                }
-                return ActionResult.CONSUME;
-            }
-
-            return ActionResult.PASS;
-        });
     }
 
     public void onScoreboardUpdate() {
-        if (CLIENT.world != null && CLIENT.player != null && (this.connected || this.connecting)) {
+        if (CLIENT.world != null && CLIENT.player != null && this.connected) {
             Scoreboard scoreboard = CLIENT.player.getScoreboard();
             if (scoreboard != null) {
                 ScoreboardObjective targetObjective = scoreboard.getObjectiveForSlot(1);
@@ -175,23 +139,12 @@ public class TubnetCore {
                 } else if (serverGameMode.contains("lightstrike")) {
                     this.gameMode = GameMode.LIGHT_STRIKE;
                     if (!(this.currentGame instanceof LightStrike)) this.currentGame = new LightStrike();
-                } else if (serverGameMode.equals("crystal rush")) {
+                } else if (serverGameMode.equals("crystalrush")) {
                     this.gameMode = GameMode.CRYSTAL_RUSH;
                     if (!(this.currentGame instanceof CrystalRush)) this.currentGame = new CrystalRush();
-                } else if (serverGameMode.equals("battle royale")) {
+                } else if (serverGameMode.equals("battleroyale")) {
                     this.gameMode = GameMode.BATTLE_ROYALE;
                     if (!(this.currentGame instanceof BattleRoyale)) this.currentGame = new BattleRoyale();
-                    TubnetGame GAME = this.currentGame;
-                    AtomicBoolean bl = new AtomicBoolean(false);
-                    GameHudEvents.TITLE_SET.register((text) -> {
-                        if (bl.get()) return;
-                        if (this.currentGame == GAME) {
-                            if (text.getString().contains("go!")) {
-                                // Start
-                            }
-                        }
-                        bl.set(true);
-                    });
                 }
                 this.currentGame.recomputeTeamType();
                 ScoreboardPlayerScore[] scoreboardPlayerScores = scoreboard.getAllPlayerScores(targetObjective).toArray(ScoreboardPlayerScore[]::new);
@@ -211,6 +164,49 @@ public class TubnetCore {
                     eventServer = false;
                 }
             }
+        }
+    }
+    @EventTarget
+    public void onChat(ChatMessageEvent ev) {
+        if (!connected) return;
+        Text msg = ev.getMessage();
+        String message = msg.getString();
+        Matcher partyJoinMatcher = PARTY_CREATED_PATTERN.matcher(message);
+        if (partyJoinMatcher.find()) {
+            String playerName = MinecraftClient.getInstance().player.getName().getString();
+            if (partyJoinMatcher.groupCount() >= 1) playerName = partyJoinMatcher.group(1);
+            currentParty = new TubnetParty(new TubnetPlayer(
+                    playerName,
+                    null
+            ), TubionMod.discordIntegration.currentPartyUUID, TubionMod.discordIntegration.currentPartySecret);
+            LOGGER.info("Party created!");
+            return;
+        }
+        Matcher partyLeaveMatcher = PARTY_DELETED_PATTERN.matcher(msg.getString());
+        if (partyLeaveMatcher.find() && this.currentParty != null) {
+            this.currentParty.deleted = true;
+            this.currentParty = null;
+            LOGGER.info("Party deleted.");
+            currentParty = new TubnetParty(
+                    new TubnetPlayer(
+                            MinecraftClient.getInstance().getSession().getUsername(),
+                            null
+                    ),
+                    null,
+                    null
+            );
+            return;
+        }
+        Matcher discordPartyRequestInvMatcher = DISCORD_PARTY_JOIN.matcher(msg.getString());
+        Matcher pmMatcher = PRIVATE_MESSAGE_PREFIX_PATTERN.matcher(msg.getString());
+        if (pmMatcher.find() && discordPartyRequestInvMatcher.find()) {
+            String discordId = discordPartyRequestInvMatcher.group(1);
+            String uuid = discordPartyRequestInvMatcher.group(2);
+            LOGGER.info(discordId + uuid + pmMatcher.group(1));
+            if (UUID.fromString(uuid).equals(this.currentParty.partyIdSecret)) {
+                this.currentParty.invitePlayer(pmMatcher.group(1));
+            }
+            ev.setCancelled(true);
         }
     }
 

@@ -14,8 +14,10 @@ import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.GameMode;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.TeamType;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.TubnetGame;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.game.mode.Lobby;
-import io.github.apricotfarmer11.mods.tubion.event.ScoreboardEvents;
 import io.github.apricotfarmer11.mods.tubion.event.WorldEvents;
+import io.github.apricotfarmer11.mods.tubion.event.api.EventManager;
+import io.github.apricotfarmer11.mods.tubion.event.api.EventTarget;
+import io.github.apricotfarmer11.mods.tubion.event.ui.ScoreboardUpdateEvent;
 import io.github.apricotfarmer11.mods.tubion.multiport.TextUtils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
@@ -48,6 +50,7 @@ public class TubnetDiscordIntegration {
     public TubnetDiscordIntegration() {
         if (TubionMod.getConfig().enableDiscordRPC && this.discordGameSdk == null) {
             initialise();
+            updateActivity();
         }
         // Register event listeners
         WorldEvents.INIT.register(() -> {
@@ -60,6 +63,7 @@ public class TubnetDiscordIntegration {
                 if (TubionMod.getConfig().enableDiscordRPC && this.discordGameSdk == null) {
                     initialise();
                 }
+                updateActivity();
             });
         });
         ClientTickEvents.END_WORLD_TICK.register(world -> {
@@ -70,10 +74,12 @@ public class TubnetDiscordIntegration {
                 LOGGER.error("Failed to run Discord Callbacks: " + error);
             }
         });
-        ScoreboardEvents.SCOREBOARD_UPDATE.register(() -> {
-            if (!active || discordGameSdk == null || !discordGameSdk.isOpen()) return;
-            updateActivity();
-        });
+        EventManager.register(this);
+    }
+    @EventTarget
+    public void onScoreboardUpdate(ScoreboardUpdateEvent ev) {
+        if (!active || discordGameSdk == null || !discordGameSdk.isOpen()) return;
+        updateActivity();
     }
     public void destroy() {
         // Stop DiscordRPC if it is running
@@ -171,10 +177,8 @@ public class TubnetDiscordIntegration {
                 if (!gamemode.equals(lastGamemode)) LOGGER.info("Setting activity to " + gamemode);
                 lastGamemode = gamemode;
             } else {
-                gamemode = "";
+                gamemode = "Unknown";
                 gamestate = "";
-                activity.setDetails("Unknown");
-                activity.setState("");
             }
             activity.setDetails(gamemode);
             activity.setState(gamestate);

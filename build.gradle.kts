@@ -1,44 +1,41 @@
-import gg.essential.gradle.util.noServerRunConfigs
-import gg.essential.gradle.util.setJvmDefault
-
 plugins {
     // kotlin since multi-version plugin depends on it
     kotlin("jvm") version("1.6.10")
     // main multi-version plugin
-    id("gg.essential.multi-version")
+    id("cc.polyfrost.multi-version")
     // defaults
-    id("gg.essential.defaults.java")
-    id("gg.essential.defaults.loom")
-    id("gg.essential.defaults.repo")
-    id("gg.essential.defaults.maven-publish")
+    id("cc.polyfrost.defaults.java")
+    id("cc.polyfrost.defaults.loom")
+    id("cc.polyfrost.defaults.repo")
 }
 
 val gameVersionToFabricApiVersion = mapOf(
         "1.18.2" to "0.67.0",
+        "1.19.0" to "0.58.0",
         "1.19.2" to "0.67.0",
         "1.19.3" to "0.67.0",
 )
 val gameVersionToClothVersion = mapOf(
         "1.18.2" to "6.3.81",
+        "1.19.0" to "8.2.88",
         "1.19.2" to "8.2.88",
         "1.19.3" to "9.0.94",
 )
 val gameVersionToModMenuVersion = mapOf(
         "1.18.2" to "3.2.5",
+        "1.19.0" to "4.0.4",
         "1.19.2" to "4.1.2",
         "1.19.3" to "5.0.2",
 )
 group = "io.github.apricotfarmer11.mods"
-java.withSourcesJar()
-tasks.compileKotlin.setJvmDefault("all")
-loom.noServerRunConfigs()
 
 repositories {
     maven("https://jitpack.io")
     maven("https://maven.shedaniel.me")
     maven("https://maven.terraformersmc.com/releases")
     maven("https://api.modrinth.com/maven")
-    maven("https://repo.essential.gg/repository/maven-public")
+    maven("https://repo.polyfrost.cc/releases")
+    maven("https://cursemaven.com")
     mavenCentral()
     gradlePluginPortal()
 }
@@ -67,16 +64,21 @@ dependencies {
     include(implementation("org.json:json:20220924")!!)
     include(implementation("org.java-websocket:Java-WebSocket:1.5.3")!!)
     if (platform.mcVersionStr == "1.18.2") {
-        runtimeOnly("org.joml:joml:1.10.5")
-        modRuntimeOnly("maven.modrinth:auth-me:3.1.0")
-        modRuntimeOnly("maven.modrinth:sodium:mc1.18.2-0.4.1")
-        modRuntimeOnly("maven.modrinth:lithium:mc1.18.2-0.10.3")
-        modRuntimeOnly("maven.modrinth:lazydfu:0.1.2")
-        modRuntimeOnly("maven.modrinth:entityculling:1.5.1-fabric-1.18")
-        modRuntimeOnly("maven.modrinth:ferrite-core:4.2.1-fabric")
-        modRuntimeOnly("maven.modrinth:dynamic-fps:v2.1.0")
-        modRuntimeOnly("maven.modrinth:borderless-mining:1.1.2+1.18.2")
+           runtimeOnly("org.joml:joml:1.10.5")
+            modRuntimeOnly("maven.modrinth:auth-me:3.1.0")
+            modRuntimeOnly("maven.modrinth:sodium:mc1.18.2-0.4.1")
+            modRuntimeOnly("maven.modrinth:lithium:mc1.18.2-0.10.3")
+            modRuntimeOnly("maven.modrinth:lazydfu:0.1.2")
+            modRuntimeOnly("maven.modrinth:entityculling:1.5.1-fabric-1.18")
+            modRuntimeOnly("maven.modrinth:ferrite-core:4.2.1-fabric")
+            modRuntimeOnly("maven.modrinth:dynamic-fps:v2.1.0")
+            modRuntimeOnly("maven.modrinth:borderless-mining:1.1.2+1.18.2")
+
+        //modRuntimeOnly("curse.maven:optifabric-322385:3961344")
     }
+}
+loom {
+    accessWidenerPath.set(File("src/main/resources/tubion.accesswidener"))
 }
 tasks {
     processResources {
@@ -87,26 +89,6 @@ tasks {
                     "mcVer" to platform.mcVersionStr,
                     "version" to project.version,
             ))
-        }
-    }
-}
-publishing {
-    publications {
-        create<MavenPublication>("Tubion") {
-            groupId = "io.github.apricotfarmer11"
-            artifactId = "tubion-" + platform.mcVersionStr
-
-            from(components["java"])
-        }
-    }
-    repositories {
-        maven {
-            name = "GitHub"
-            url = uri("https://maven.pkg.github.com/ApricotFarmer11/Tubion")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
         }
     }
 }

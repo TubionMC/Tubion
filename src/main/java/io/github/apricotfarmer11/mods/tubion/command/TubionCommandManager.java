@@ -6,6 +6,7 @@ import com.mojang.brigadier.CommandDispatcher;
 //$$ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 //$$ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 //#else
+import io.github.apricotfarmer11.mods.tubion.core.tubnet.TubnetCore;
 import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 //#endif
@@ -44,20 +45,20 @@ public class TubionCommandManager {
         TubnetConnectionEvents.DISCONNECT.register(() -> {
             CommandNode<FabricClientCommandSource> rootNode = dispatcher.getRoot();
 
-            Field childrenField = rootNode.getClass().getEnclosingClass().getDeclaredField("children");
+            Field childrenField = rootNode.getClass().getSuperclass().getDeclaredField("children");
             childrenField.setAccessible(true);
             LinkedHashMap<String, CommandNode<FabricClientCommandSource>> children = (LinkedHashMap<String, CommandNode<FabricClientCommandSource>>) childrenField.get(rootNode);
             children.remove("tubion");
-            LOGGER.info("Removed /tubion!");
-
-            Field literalField = rootNode.getClass().getDeclaredField("literals");
+            Field literalField = rootNode.getClass().getSuperclass().getDeclaredField("literals");
             literalField.setAccessible(true);
             LinkedHashMap<String, LiteralCommandNode<FabricClientCommandSource>> literals = (LinkedHashMap<String, LiteralCommandNode<FabricClientCommandSource>>) literalField.get(rootNode);
             literals.remove("tubion");
-            LOGGER.info("Removed /tubion from literals!");
         });
     }
     private void registerCommands() {
+        if (!TubnetCore.getInstance().connected) {
+            return;
+        }
         this.dispatcher.register(ClientCommandManager.literal("tubion")
                 .then(
                         DiscordSubcommand.DISCORD_SUBCOMMAND

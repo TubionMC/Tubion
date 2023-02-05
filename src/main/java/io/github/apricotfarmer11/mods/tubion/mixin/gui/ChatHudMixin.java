@@ -2,7 +2,9 @@ package io.github.apricotfarmer11.mods.tubion.mixin.gui;
 
 import io.github.apricotfarmer11.mods.tubion.TubionMod;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.TubnetCore;
-import io.github.apricotfarmer11.mods.tubion.event.ChatMessageEvent;
+import io.github.apricotfarmer11.mods.tubion.event.api.EventManager;
+import io.github.apricotfarmer11.mods.tubion.event.api.events.callables.EventCancellable;
+import io.github.apricotfarmer11.mods.tubion.event.ui.ChatMessageEvent;
 import io.github.apricotfarmer11.mods.tubion.misc.ChatHudMixin$VisibleMessageGetter;
 import io.github.apricotfarmer11.mods.tubion.multiport.TextUtils;
 import net.minecraft.client.MinecraftClient;
@@ -68,10 +70,10 @@ public abstract class ChatHudMixin implements ChatHudMixin$VisibleMessageGetter 
     public void onMessage(Text message, int i, int j, boolean bl, CallbackInfo ci) {
     //#endif
         if (!TubnetCore.getInstance().connected) return;
-        ActionResult result = ChatMessageEvent.EVENT.invoker().onChat(message);
-        if (result != ActionResult.PASS) {
+        EventCancellable ev = (EventCancellable) EventManager.call(new ChatMessageEvent(message));
+
+        if (ev.isCancelled()) {
             ci.cancel();
-            return;
         }
     }
     //#if MC>=11902
@@ -93,7 +95,7 @@ public abstract class ChatHudMixin implements ChatHudMixin$VisibleMessageGetter 
                 rank = 0;
             }
             if (rank == null) {
-                LOGGER.info("[chat] no rank found");
+                LOGGER.info("[ui] no rank found");
                 return message;
             }
 
@@ -116,7 +118,7 @@ public abstract class ChatHudMixin implements ChatHudMixin$VisibleMessageGetter 
                     break;
                 }
             }
-            LOGGER.info("[chat] prefix: " + prefix);
+            LOGGER.info("[ui] prefix: " + prefix);
             return TextUtils.literal(prefix)
                     .setStyle(
                             Style.EMPTY.withFont(new Identifier("tubion:icons"))

@@ -1,7 +1,6 @@
 package io.github.apricotfarmer11.mods.tubion.core.tubnet;
 
 import io.github.apricotfarmer11.mods.tubion.core.helper.PlayerHelper;
-import io.github.apricotfarmer11.mods.tubion.event.ChatMessageEvent;
 import net.minecraft.util.ActionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,33 +30,6 @@ public class TubnetParty {
         if (this.partyIdSecret == null) this.partyIdSecret = UUID.randomUUID();
         partyOwner = owner;
         members.add(partyOwner);
-        ChatMessageEvent.EVENT.register((msg) -> {
-            if (deleted) return ActionResult.PASS;
-            if (msg.getString().contains("Your party was disbanded.")) {
-                deleted = true;
-                return ActionResult.PASS;
-            }
-
-            Matcher partyJoinTest = PARTY_JOINED_MSG_MATCHER.matcher(msg.getString());
-            if (partyJoinTest.find()) {
-                String user = partyJoinTest.group(1);
-                members.add(new TubnetPlayer(user, null));
-                LOGGER.info(user + " has joined the party");
-            } else {
-                Matcher partyLeaveTest = PARTY_LEFT_MSG_MATCHER.matcher(msg.getString());
-                if (partyLeaveTest.find()) {
-                    String user = partyLeaveTest.group(1);
-                    members.forEach((player) -> {
-                        if (player.username == user) {
-                            members.remove(player);
-                        }
-                    });
-                    LOGGER.info(user + "has left the party");
-                }
-            }
-
-            return ActionResult.PASS;
-        });
     }
     public void invitePlayer(String name) {
         if (this.deleted) return;

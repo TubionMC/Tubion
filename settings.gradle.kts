@@ -2,15 +2,14 @@ pluginManagement {
     repositories {
         mavenCentral()
         gradlePluginPortal()
-        maven("https://repo.essential.gg/repository/maven-public")
+        maven("https://repo.polyfrost.cc/releases")
         maven("https://maven.architectury.dev")
         maven("https://maven.fabricmc.net")
         maven("https://maven.minecraftforge.net")
         maven("https://jitpack.io")
     }
     plugins {
-        id("gg.essential.multi-version.root") version "0.1.18"
-
+        id("cc.polyfrost.multi-version.root") version "0.1.18"
     }
 }
 

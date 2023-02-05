@@ -28,11 +28,14 @@ To get this project, you can either obtain it as a zip file above, or clone it v
 git clone https://github.com/ApricotFarmer11/Tubion
 cd Tubion
 ```
-To build the project and obtain the actual JARs, you need to download JDK 17.
+To build the project and obtain the actual artifacts, you need to download JDK 17.
 ```bash
 # unix (linux/macos)
 ./gradlew build
 # windows
 gradlew build
 ```
+
+## Credits
+Thank you to [DarkMagician6](https://bitbucket.org/DarkMagician6/) for their [EventAPI](https://bitbucket.org/DarkMagician6/eventapi/)!
 

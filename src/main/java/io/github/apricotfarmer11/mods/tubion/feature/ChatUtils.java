@@ -2,13 +2,17 @@ package io.github.apricotfarmer11.mods.tubion.feature;
 
 import io.github.apricotfarmer11.mods.tubion.TubionMod;
 import io.github.apricotfarmer11.mods.tubion.config.TubionConfig;
+import io.github.apricotfarmer11.mods.tubion.core.tubient.model.types.ChatInfoLevel;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.TubnetCore;
 import io.github.apricotfarmer11.mods.tubion.core.tubnet.event.TubnetConnectionEvents;
+import io.github.apricotfarmer11.mods.tubion.event.api.EventManager;
+import io.github.apricotfarmer11.mods.tubion.event.api.EventTarget;
+import io.github.apricotfarmer11.mods.tubion.event.ui.ChatMessageEvent;
 import io.github.apricotfarmer11.mods.tubion.multiport.TextUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
+import org.slf4j.LoggerFactory;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,33 +21,39 @@ public class ChatUtils {
     private static final MinecraftClient CLIENT = MinecraftClient.getInstance();
     private static int lobbyEntered = 0;
     private static final Pattern DYKREGEX = Pattern.compile("^\n . Did you know\\?\n\n (.*)\n$");
+    private static final Pattern MAXIMUM_WOOL_LIMIT_REGEX = Pattern.compile("^. You can only carry a maximum of 64 wool at a time\\.$");
     public ChatUtils() {
         TubnetConnectionEvents.DISCONNECT.register(() -> {
             lobbyEntered = 0;
         });
+        EventManager.register(this);
     }
-    public ActionResult onChat(Text msg) {
-        if (!TubnetCore.getInstance().connected) return ActionResult.PASS;
+    public static void register() {
+        new ChatUtils();
+    }
+    @EventTarget
+    public void onChat(ChatMessageEvent ev) {
+        if (!TubnetCore.getInstance().connected) return;
         TubionConfig config = TubionMod.getConfig();
-        ActionResult result = ActionResult.PASS;
+        Text text = ev.getMessage();
+        String message = text.getString();
         switch (TubnetCore.getInstance().getGameMode()) {
             case LOBBY: {
-                Matcher m = DYKREGEX.matcher(msg.getString());
+                Matcher m = DYKREGEX.matcher(message);
                 if (config.hideTips && m.find()) {
-                    result = ActionResult.CONSUME;
                     break;
                 }
-                if (config.hideWelcomeMessage && msg.getString().contains("Welcome to New Block City")) {
+                if (config.hideWelcomeMessage && message.contains("Welcome to New Block City")) {
                     if (++lobbyEntered > 1) {
-                        result = ActionResult.CONSUME;
+                        ev.setCancelled(true);
                         break;
                     }
+                    break;
                 }
                 if (config.betterNpcMessages) {
-                    String message = msg.getString();
-                    Pattern npc1Liner = Pattern.compile("\n . ([a-zA-Z ]+)\n\n {2}(.*)\n$");
-                    Pattern npc2Liner = Pattern.compile("\n . ([a-zA-Z ]+)\n\n {2}(.*)\n {2}(.*)\n$");
-                    Pattern npc3Liner = Pattern.compile("\n . ([a-zA-Z ]+)\n\n {2}(.*)\n {2}(.*)\n {2}(.*)\n$");
+                    Pattern npc1Liner = Pattern.compile("^\n . ([a-zA-Z ]+)\n\n {2}(.*)\n$");
+                    Pattern npc2Liner = Pattern.compile("^\n . ([a-zA-Z ]+)\n\n {2}(.*)\n {2}(.*)\n$");
+                    Pattern npc3Liner = Pattern.compile("^\n . ([a-zA-Z ]+)\n\n {2}(.*)\n {2}(.*)\n {2}(.*)\n$");
 
                     Matcher npcLiner3Match = npc3Liner.matcher(message);
                     String npcMessage;
@@ -76,19 +86,18 @@ public class ChatUtils {
                                         .append(" \uA01C ")
                                         .append(npcMessage)
                         );
-                        result = ActionResult.CONSUME;
                     }
                 }
                 break;
             }
             case BATTLE_ROYALE: {
-                if (config.hideWoolLimitMessage && msg.getString().contains("maximum of 64 wool")) {
-                    result = ActionResult.CONSUME;
+                if (config.hideWoolLimitMessage && MAXIMUM_WOOL_LIMIT_REGEX.matcher(message).find()) {
+                    ev.setCancelled(true);
+                    return;
                 }
                 break;
             }
         }
-        if (result != ActionResult.PASS) return result;
-        return CompactChat.onChat(msg);
+        CompactChat.onChat(ev);
     }
 }

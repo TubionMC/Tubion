@@ -10,7 +10,9 @@ public interface TubnetGame {
     String getName();
     TeamType getTeamType();
     default boolean isInQueue() {
-        Scoreboard scoreboard = MinecraftClient.getInstance().world.getScoreboard();
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.world == null) return false;
+        Scoreboard scoreboard = client.world.getScoreboard();
         if (scoreboard == null) return false;
         ScoreboardObjective objective = scoreboard.getObjectiveForSlot(1);
         ScoreboardPlayerScore[] scoreboardPlayerScores = scoreboard.getAllPlayerScores(objective).toArray(ScoreboardPlayerScore[]::new);

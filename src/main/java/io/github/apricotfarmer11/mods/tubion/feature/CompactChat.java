@@ -1,6 +1,7 @@
 package io.github.apricotfarmer11.mods.tubion.feature;
 
 import io.github.apricotfarmer11.mods.tubion.TubionMod;
+import io.github.apricotfarmer11.mods.tubion.event.ui.ChatMessageEvent;
 import io.github.apricotfarmer11.mods.tubion.misc.ChatHudMixin$VisibleMessageGetter;
 import io.github.apricotfarmer11.mods.tubion.multiport.TextUtils;
 import net.minecraft.client.gui.hud.ChatHud;
@@ -17,13 +18,14 @@ public class CompactChat {
     private static int amount;
     private static boolean ignore = false;
 
-    public static ActionResult onChat(Text text) {
-        if (ignore) return ActionResult.PASS;
-        if (!TubionMod.getConfig().enableCompactChat) return ActionResult.PASS;
+    public static void onChat(ChatMessageEvent ev) {
+        Text text = ev.getMessage();
+        if (ignore) return;
+        if (!TubionMod.getConfig().enableCompactChat) return;
         ChatHud chat = CLIENT.inGameHud.getChatHud();
         if (lastMessage.equals(text.getString())) {
             //#if MC>=11902
-            //$$ List<ChatHudLine.Visible> visibleMessages = ((ChatHudMixin$VisibleMessageGetter) chat).getVisibleMessages();
+            //$$ List<ChatHudLine.Visible> visibleMessages = ((ChatHudMixin$VisibleMessageGetter) ui).getVisibleMessages();
             //#else
             List<ChatHudLine> visibleMessages = ((ChatHudMixin$VisibleMessageGetter) chat).getVisibleMessages();
             //#endif
@@ -37,11 +39,11 @@ public class CompactChat {
                                     .formatted(Formatting.DARK_GRAY))
             );
             ignore = false;
-            return ActionResult.CONSUME;
+            ev.setCancelled(true);
+
         } else {
             amount = 1;
             lastMessage = text.getString();
         }
-        return ActionResult.PASS;
     }
 }
