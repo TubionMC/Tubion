@@ -9,7 +9,7 @@ pluginManagement {
         maven("https://jitpack.io")
     }
     plugins {
-        id("cc.polyfrost.multi-version.root") version "0.1.18"
+        id("cc.polyfrost.multi-version.root") version "0.1.28"
     }
 }
 
