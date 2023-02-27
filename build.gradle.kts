@@ -61,7 +61,7 @@ dependencies {
     include(implementation("com.github.JnCrMx:discord-game-sdk4j:0.5.5")!!)
     include(implementation("io.socket:socket.io-client:2.1.0")!!)
     include(implementation("io.socket:engine.io-client:2.1.0")!!)
-    include(implementation("org.json:json:20220924")!!)
+    include(implementation("org.json:json:20230227")!!)
     include(implementation("org.java-websocket:Java-WebSocket:1.5.3")!!)
     if (platform.mcVersionStr == "1.18.2") {
            runtimeOnly("org.joml:joml:1.10.5")
