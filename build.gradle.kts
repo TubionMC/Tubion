@@ -69,7 +69,7 @@ dependencies {
             modRuntimeOnly("maven.modrinth:sodium:mc1.18.2-0.4.1")
             modRuntimeOnly("maven.modrinth:lithium:mc1.18.2-0.10.3")
             modRuntimeOnly("maven.modrinth:lazydfu:0.1.2")
-            modRuntimeOnly("maven.modrinth:entityculling:1.5.1-fabric-1.18")
+            modRuntimeOnly("maven.modrinth:entityculling:1.6.2-1.19.4")
             modRuntimeOnly("maven.modrinth:ferrite-core:4.2.1-fabric")
             modRuntimeOnly("maven.modrinth:dynamic-fps:v2.1.0")
             modRuntimeOnly("maven.modrinth:borderless-mining:1.1.2+1.18.2")
