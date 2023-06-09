@@ -67,7 +67,7 @@ dependencies {
            runtimeOnly("org.joml:joml:1.10.5")
             modRuntimeOnly("maven.modrinth:auth-me:3.1.0")
             modRuntimeOnly("maven.modrinth:sodium:mc1.18.2-0.4.1")
-            modRuntimeOnly("maven.modrinth:lithium:mc1.18.2-0.10.3")
+            modRuntimeOnly("maven.modrinth:lithium:mc1.20-0.11.2")
             modRuntimeOnly("maven.modrinth:lazydfu:0.1.2")
             modRuntimeOnly("maven.modrinth:entityculling:1.5.1-fabric-1.18")
             modRuntimeOnly("maven.modrinth:ferrite-core:4.2.1-fabric")
